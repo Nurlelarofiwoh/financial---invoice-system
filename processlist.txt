@@ -1,0 +1,20 @@
+﻿Id	User	Host	db	Command	Time	State	Info	Progress
+4	system user		NULL	Daemon	NULL	InnoDB purge worker	NULL	0.000
+2	system user		NULL	Daemon	NULL	InnoDB purge worker	NULL	0.000
+3	system user		NULL	Daemon	NULL	InnoDB purge coordinator	NULL	0.000
+1	system user		NULL	Daemon	NULL	InnoDB purge worker	NULL	0.000
+5	system user		NULL	Daemon	NULL	InnoDB shutdown handler	NULL	0.000
+12	root	localhost:57218	db_invoice_app	Execute	543	Statistics	select * from `sessions` where `id` = ? limit 1	0.000
+13	root	localhost:59845	db_invoice_app	Prepare	530	Opening tables	select `migration` from `migrations` order by `batch` asc, `migration` asc	0.000
+14	root	localhost:50756	db_invoice_app	Prepare	473	Opening tables	select `migration` from `migrations` order by `batch` asc, `migration` asc	0.000
+15	root	localhost:50759	db_invoice_app	Prepare	452	Opening tables	select `migration` from `migrations` order by `batch` asc, `migration` asc	0.000
+16	root	localhost:54165	db_invoice_app	Prepare	418	Opening tables	select `migration` from `migrations` order by `batch` asc, `migration` asc	0.000
+17	root	localhost:54169	db_invoice_app	Prepare	389	Opening tables	select `migration` from `migrations` order by `batch` asc, `migration` asc	0.000
+18	root	localhost:59065	db_invoice_app	Prepare	331	Opening tables	select `migration` from `migrations` order by `batch` asc, `migration` asc	0.000
+19	root	localhost:50408	db_invoice_app	Prepare	306	Opening tables	select `migration` from `migrations` order by `batch` asc, `migration` asc	0.000
+20	root	localhost:50412	db_invoice_app	Prepare	283	Opening tables	select `migration` from `migrations` order by `batch` asc, `migration` asc	0.000
+22	root	localhost:59754	NULL	Query	188	Setup	ALTER TABLE db_invoice_app.invoice_items ADD COLUMN order_date date NULL AFTER invoice_id	0.000
+23	root	localhost:59767	NULL	Query	167	Opening tables	DESCRIBE db_invoice_app.invoice_items	0.000
+24	root	localhost:54732	db_invoice_app	Query	139	Opening tables	DESCRIBE invoice_items	0.000
+25	root	localhost:59380	db_invoice_app	Query	114	Opening tables	DESCRIBE invoice_items	0.000
+27	root	localhost:50665	db_invoice_app	Query	0	Init	SHOW PROCESSLIST	0.000

@@ -1,0 +1,21 @@
+<svg width="60" height="60" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF3B30" />
+      <stop offset="50%" stop-color="#FF9500" />
+      <stop offset="100%" stop-color="#FFCC00" />
+    </linearGradient>
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1E293B" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+  </defs>
+  <!-- Shield outer boundary -->
+  <path d="M50 5 L88 20 V50 C88 72 70 88 50 95 C30 88 12 72 12 50 V20 L50 5 Z" fill="url(#shieldGrad)" stroke="url(#logoGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Inner Speed Gear / Motorcycle Wing Emblem -->
+  <path d="M30 35 L48 24 L52 24 L70 35 L62 42 L50 34 L38 42 L30 35 Z" fill="url(#logoGrad)"/>
+  <!-- Stylized "20" Text -->
+  <text x="50" y="68" font-family="'Plus Jakarta Sans', sans-serif" font-weight="900" font-size="28" fill="#FFFFFF" text-anchor="middle" letter-spacing="-1">20</text>
+  <!-- Speed Line -->
+  <path d="M32 76 H68" stroke="url(#logoGrad)" stroke-width="3" stroke-linecap="round"/>
+</svg>

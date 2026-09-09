@@ -1,0 +1,7 @@
+﻿C:\xampp\mysql\bin\mysql.exe : ERROR 2013 (HY000) at line 1: Lost connection to MySQL server during query
+At line:1 char:354
++ ... -Seconds 3; C:\xampp\mysql\bin\mysql.exe -u root db_invoice_app --exe ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ERROR 2013 (HY0...er during query:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

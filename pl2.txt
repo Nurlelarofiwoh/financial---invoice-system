@@ -1,0 +1,30 @@
+﻿Id	User	Host	db	Command	Time	State	Info	Progress
+4	system user		NULL	Daemon	NULL	InnoDB purge worker	NULL	0.000
+2	system user		NULL	Daemon	NULL	InnoDB purge worker	NULL	0.000
+3	system user		NULL	Daemon	NULL	InnoDB purge coordinator	NULL	0.000
+1	system user		NULL	Daemon	NULL	InnoDB purge worker	NULL	0.000
+5	system user		NULL	Daemon	NULL	InnoDB shutdown handler	NULL	0.000
+12	root	localhost:57218	db_invoice_app	Killed	676	Statistics	select * from `sessions` where `id` = ? limit 1	0.000
+13	root	localhost:59845	db_invoice_app	Killed	663	Opening tables	select `migration` from `migrations` order by `batch` asc, `migration` asc	0.000
+14	root	localhost:50756	db_invoice_app	Killed	607	Opening tables	select `migration` from `migrations` order by `batch` asc, `migration` asc	0.000
+15	root	localhost:50759	db_invoice_app	Killed	585	Opening tables	select `migration` from `migrations` order by `batch` asc, `migration` asc	0.000
+16	root	localhost:54165	db_invoice_app	Killed	551	Opening tables	select `migration` from `migrations` order by `batch` asc, `migration` asc	0.000
+17	root	localhost:54169	db_invoice_app	Killed	522	Opening tables	select `migration` from `migrations` order by `batch` asc, `migration` asc	0.000
+18	root	localhost:59065	db_invoice_app	Killed	464	Opening tables	select `migration` from `migrations` order by `batch` asc, `migration` asc	0.000
+19	root	localhost:50408	db_invoice_app	Killed	439	Opening tables	select `migration` from `migrations` order by `batch` asc, `migration` asc	0.000
+20	root	localhost:50412	db_invoice_app	Killed	416	Opening tables	select `migration` from `migrations` order by `batch` asc, `migration` asc	0.000
+22	root	localhost:59754	NULL	Killed	321	Setup	ALTER TABLE db_invoice_app.invoice_items ADD COLUMN order_date date NULL AFTER invoice_id	0.000
+23	root	localhost:59767	NULL	Killed	300	Opening tables	DESCRIBE db_invoice_app.invoice_items	0.000
+24	root	localhost:54732	db_invoice_app	Killed	272	Opening tables	DESCRIBE invoice_items	0.000
+25	root	localhost:59380	db_invoice_app	Killed	247	Opening tables	DESCRIBE invoice_items	0.000
+29	root	localhost:50672	db_invoice_app	Prepare	115	Opening tables	select `migration` from `migrations` order by `batch` asc, `migration` asc	0.000
+30	root	localhost:50673	db_invoice_app	Prepare	115	Opening tables	select `migration` from `migrations` order by `batch` asc, `migration` asc	0.000
+31	root	localhost:50674	db_invoice_app	Prepare	114	Opening tables	select `migration` from `migrations` order by `batch` asc, `migration` asc	0.000
+32	root	localhost:50675	db_invoice_app	Prepare	115	Opening tables	select `migration` from `migrations` order by `batch` asc, `migration` asc	0.000
+33	root	localhost:50676	db_invoice_app	Prepare	115	Opening tables	select `migration` from `migrations` order by `batch` asc, `migration` asc	0.000
+34	root	localhost:50677	db_invoice_app	Prepare	114	Opening tables	select `migration` from `migrations` order by `batch` asc, `migration` asc	0.000
+35	root	localhost:50678	db_invoice_app	Prepare	114	Opening tables	select `migration` from `migrations` order by `batch` asc, `migration` asc	0.000
+36	root	localhost:50679	db_invoice_app	Prepare	114	Opening tables	select `migration` from `migrations` order by `batch` asc, `migration` asc	0.000
+37	root	localhost:50681	db_invoice_app	Prepare	111	Opening tables	select * from `sessions` where `id` = ? limit 1	0.000
+39	root	localhost:60057	db_invoice_app	Query	57	Opening tables	SHOW COLUMNS FROM invoice_items LIKE 'order_date'	0.000
+40	root	localhost:55782	db_invoice_app	Query	0	Init	SHOW PROCESSLIST	0.000
