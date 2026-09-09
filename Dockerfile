@@ -1,30 +1,46 @@
-FROM php:8.2-cli
+FROM php:8.2-fpm-alpine
 
-# Install dependencies sistem & ekstensi PHP untuk Laravel
-RUN apt-get update && apt-get install -y \
+# Install system dependencies
+RUN apk add --no-cache \
+    nginx \
     git \
     unzip \
+    curl \
     libpng-dev \
-    libonig-dev \
+    libjpeg-turbo-dev \
+    freetype-dev \
+    oniguruma-dev \
     libxml2-dev \
+    libzip-dev \
     zip \
-    curl
+    ca-certificates \
+    icu-dev
 
-RUN docker-php-ext-install pdo_mysql mbstring gd
+# Install PHP extensions
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo_mysql mbstring gd opcache intl zip bcmath
 
-# Copy Composer dari image resmi
+# Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-WORKDIR /app
+WORKDIR /var/www/html
+
+# Copy application files
 COPY . .
 
-# Install dependency Laravel
-RUN composer install --no-dev --optimize-autoloader
+# Install Laravel dependencies
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
-# Izinkan akses folder storage & cache
-RUN chmod -R 777 storage bootstrap/cache
+# Create necessary directories and set permissions
+RUN mkdir -p /run/nginx storage/framework/cache/data storage/framework/sessions storage/framework/views bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache \
+    && chown -R www-data:www-data storage bootstrap/cache
+
+# Copy configuration files
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY start.sh /start.sh
+RUN sed -i 's/\r$//' /start.sh && chmod +x /start.sh
 
 EXPOSE 10000
 
-# Jalankan server Laravel
-CMD php artisan serve --host=0.0.0.0 --port=10000
+CMD ["/start.sh"]

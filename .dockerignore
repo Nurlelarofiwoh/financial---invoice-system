@@ -1,0 +1,17 @@
+.git
+.github
+.env
+.env.*
+node_modules
+vendor
+*.log
+alter*.txt
+kill*.txt
+col_check.txt
+pl2.txt
+php_test.txt
+processlist.txt
+verify_col.txt
+migrate_status.txt
+check_migration.php
+run_migration.php
