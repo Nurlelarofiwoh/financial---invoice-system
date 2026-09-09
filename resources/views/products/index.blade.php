@@ -4,26 +4,26 @@
 <div class="space-y-6" x-data="{ quickPriceModal: false, activeProduct: {}, newPrice: '' }">
     
     <!-- Page Header & Action Button -->
-    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+    <div class="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-            <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Product Catalog & Price List</h1>
-            <p class="text-sm text-slate-500 mt-1">Manage spare parts price list, unit rates, and product master data.</p>
+            <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Product Catalog & Price List</h1>
+            <p class="text-xs sm:text-sm text-slate-500 mt-1">Manage spare parts price list, unit rates, and product master data.</p>
         </div>
 
-        <div class="flex items-center space-x-3">
+        <div class="w-full sm:w-auto">
             <a href="{{ route('products.create') }}" 
-               class="inline-flex items-center px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl transition shadow-md hover:shadow-lg">
+               class="flex sm:inline-flex items-center justify-center px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl transition shadow-md hover:shadow-lg">
                <span class="mr-2">➕</span> Add New Product
             </a>
         </div>
     </div>
 
     <!-- Search & Filter Controls Card -->
-    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80">
-        <form method="GET" action="{{ route('products.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
+    <div class="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-200/80">
+        <form method="GET" action="{{ route('products.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end">
             
             <!-- Search Keyword -->
-            <div class="lg:col-span-2">
+            <div class="sm:col-span-2 lg:col-span-2">
                 <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Search Product</label>
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Search code or name..."
                        class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -51,11 +51,11 @@
             </div>
 
             <!-- Submit Filter -->
-            <div class="flex items-center space-x-2">
-                <button type="submit" class="w-full py-2 px-4 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm rounded-xl transition shadow">
+            <div class="flex items-center gap-2">
+                <button type="submit" class="flex-1 py-2 px-4 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm rounded-xl transition shadow">
                     Filter
                 </button>
-                <a href="{{ route('products.index') }}" class="py-2 px-3 bg-slate-100 text-slate-600 font-semibold text-sm rounded-xl hover:bg-slate-200 transition">
+                <a href="{{ route('products.index') }}" class="py-2 px-3 bg-slate-100 text-slate-600 font-semibold text-sm rounded-xl hover:bg-slate-200 transition whitespace-nowrap">
                     Reset
                 </a>
             </div>
@@ -63,9 +63,68 @@
         </form>
     </div>
 
-    <!-- Product Data Table -->
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
-        <div class="overflow-x-auto">
+    <!-- Product Data — Mobile Card View / Desktop Table -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden mobile-card-view">
+
+        {{-- ── MOBILE CARDS (shown on < md) ── --}}
+        <div class="mobile-cards p-3 space-y-3">
+            @forelse($products as $product)
+                <div class="invoice-mobile-card">
+                    {{-- Top: Code + Status --}}
+                    <div class="flex items-center justify-between mb-1.5">
+                        <span class="font-mono text-xs text-slate-400 font-semibold">{{ $product->product_code }}</span>
+                        @if($product->status === 'active')
+                            <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">Active</span>
+                        @else
+                            <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600">Inactive</span>
+                        @endif
+                    </div>
+
+                    {{-- Product Name & Category --}}
+                    <div class="mb-2">
+                        <p class="font-bold text-slate-900 text-sm">{{ $product->name }}</p>
+                        <span class="inline-block mt-0.5 px-2 py-0.5 bg-slate-100 text-slate-600 text-xs rounded-md">{{ $product->category }}</span>
+                    </div>
+
+                    {{-- Price row --}}
+                    <div class="flex items-center justify-between py-2 border-t border-b border-slate-100 mb-2">
+                        <span class="text-xs text-slate-500 font-medium">Unit Price:</span>
+                        <div class="flex items-center gap-2">
+                            <span class="font-extrabold text-slate-900 text-sm">Rp {{ number_format($product->unit_price, 0, ',', '.') }}</span>
+                            <button @click="quickPriceModal = true; activeProduct = {{ json_encode($product) }}; newPrice = '{{ $product->unit_price }}'" 
+                                    class="text-blue-600 text-xs font-bold bg-blue-50 hover:bg-blue-100 px-2 py-0.5 rounded transition"
+                                    title="Quick Edit Price">
+                                ✏️ Edit
+                            </button>
+                        </div>
+                    </div>
+
+                    {{-- Actions --}}
+                    <div class="flex items-center gap-2">
+                        <a href="{{ route('products.edit', $product->id) }}" 
+                           class="flex-1 text-center py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition">
+                           ✏️ Edit Product
+                        </a>
+                        <form method="POST" action="{{ route('products.destroy', $product->id) }}" 
+                              class="flex-1"
+                              onsubmit="return confirm('Are you sure you want to delete this product?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="w-full py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-bold transition">
+                                🗑️ Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            @empty
+                <div class="py-10 text-center text-slate-400 text-sm">
+                    No products found. Click "+ Add New Product" to add items.
+                </div>
+            @endforelse
+        </div>
+
+        {{-- ── DESKTOP TABLE (shown on ≥ md) ── --}}
+        <div class="desktop-table overflow-x-auto">
             <table class="w-full text-left text-sm text-slate-600">
                 <thead class="bg-slate-50 text-xs font-bold text-slate-500 uppercase tracking-wider border-b border-slate-200">
                     <tr>
@@ -153,7 +212,7 @@
         <div class="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4" @click.away="quickPriceModal = false">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                 <h3 class="font-bold text-slate-900">Quick Update Unit Price</h3>
-                <button @click="quickPriceModal = false" class="text-slate-400 hover:text-slate-600 font-bold">&times;</button>
+                <button @click="quickPriceModal = false" class="text-slate-400 hover:text-slate-600 font-bold text-xl">&times;</button>
             </div>
 
             <form :action="'/products/' + activeProduct.id + '/quick-price'" method="POST" class="space-y-4">

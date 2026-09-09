@@ -4,12 +4,12 @@
 <div class="max-w-4xl mx-auto space-y-6" x-data="invoiceForm()">
     
     <!-- Page Header -->
-    <div class="flex items-center justify-between">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
-            <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Create Invoice</h1>
-            <p class="text-sm text-slate-500 mt-0.5">Quickly select products by keyword, specify quantity, and save invoice instantly.</p>
+            <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Create Invoice</h1>
+            <p class="text-xs sm:text-sm text-slate-500 mt-0.5">Quickly select products by keyword, specify quantity, and save invoice instantly.</p>
         </div>
-        <a href="{{ route('invoices.index') }}" class="text-xs font-bold text-slate-600 hover:text-slate-900 bg-white border border-slate-200 px-3.5 py-2 rounded-xl shadow-sm">
+        <a href="{{ route('invoices.index') }}" class="text-xs font-bold text-slate-600 hover:text-slate-900 bg-white border border-slate-200 px-3.5 py-2 rounded-xl shadow-sm shrink-0">
             &larr; Back to Invoices
         </a>
     </div>
@@ -19,13 +19,13 @@
         @csrf
 
         <!-- Customer & Date Metadata -->
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-5">
-            <h3 class="font-bold text-slate-900 text-lg border-b border-slate-100 pb-3 flex items-center justify-between">
+        <div class="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-200/80 space-y-5">
+            <h3 class="font-bold text-slate-900 text-base sm:text-lg border-b border-slate-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                 <span>1. Billing Information (Informasi Klien)</span>
                 <span class="text-xs font-mono font-normal text-slate-400">Suggested Inv: {{ $suggestedNumber }}</span>
             </h3>
 
-            <!-- Customer Name Field Only -->
+            <!-- Customer Name Field -->
             <div>
                 <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nama Klien (Client Name)</label>
                 <input type="text" name="customer_name" value="{{ old('customer_name', 'Pelanggan Umum') }}" placeholder="Contoh: Bengkel Honda Jaya / Budi"
@@ -62,20 +62,102 @@
         </div>
 
         <!-- Dynamic Product Line Items Section -->
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-5">
+        <div class="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-200/80 space-y-4">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div>
-                    <h3 class="font-bold text-slate-900 text-lg">2. Dynamic Line Items</h3>
-                    <p class="text-xs text-slate-500">Ketik kata kunci nama produk (misal: "vario", "beat", "mio", "kardus") untuk mencari barang.</p>
+                    <h3 class="font-bold text-slate-900 text-base sm:text-lg">2. Dynamic Line Items</h3>
+                    <p class="text-xs text-slate-500 hidden sm:block">Ketik kata kunci nama produk untuk mencari barang.</p>
                 </div>
                 <button type="button" @click="addRow()" 
                         class="inline-flex items-center px-3.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 font-bold text-xs rounded-xl transition">
-                    + Add Product Row
+                    + Add Row
                 </button>
             </div>
 
-            <!-- Items Table -->
-            <div class="overflow-visible">
+            {{-- ── MOBILE: Card per item (shown on < md) ── --}}
+            <div class="md:hidden space-y-3">
+                <template x-for="(item, index) in items" :key="index">
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2.5">
+                        {{-- Item number + remove --}}
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-slate-400" x-text="'Item #' + (index + 1)"></span>
+                            <button type="button" @click="removeRow(index)"
+                                    x-show="items.length > 1"
+                                    class="text-rose-500 hover:text-rose-700 text-xs font-bold px-2 py-1 rounded hover:bg-rose-50">
+                                ✕ Hapus
+                            </button>
+                        </div>
+
+                        {{-- Order Date --}}
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Tgl Pesan *</label>
+                            <input type="date"
+                                   :name="'items['+index+'][order_date]'"
+                                   x-model="item.order_date"
+                                   required
+                                   class="w-full px-2.5 py-2 bg-white border border-slate-200 rounded-lg text-xs font-medium focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+
+                        {{-- Product Search --}}
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Produk *</label>
+                            <div class="relative" @click.outside="item.open = false">
+                                <input type="hidden" :name="'items['+index+'][product_id]'" x-model="item.product_id" required>
+                                <div class="relative">
+                                    <input type="text"
+                                           x-model="item.displayText"
+                                           @focus="item.open = true"
+                                           @input="item.open = true"
+                                           placeholder="🔍 Ketik nama produk..."
+                                           required
+                                           class="w-full px-2.5 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-900 focus:ring-2 focus:ring-blue-500 outline-none pr-7">
+                                    <button type="button" @click="item.open = !item.open" class="absolute right-2 top-2 text-slate-400 text-xs">▼</button>
+                                </div>
+                                <div x-show="item.open" x-cloak
+                                     class="absolute z-50 left-0 right-0 mt-1 max-h-48 overflow-y-auto bg-white rounded-xl border border-slate-200 shadow-2xl divide-y divide-slate-100 text-xs">
+                                    <template x-for="p in getFilteredProducts(item.displayText)" :key="p.id">
+                                        <div @click="selectProduct(index, p)"
+                                             class="px-3 py-2 hover:bg-blue-50 cursor-pointer flex items-center justify-between transition">
+                                            <div>
+                                                <span class="font-bold text-slate-900 block" x-text="p.name"></span>
+                                                <span class="text-slate-400 font-mono" x-text="p.product_code + ' • ' + p.category"></span>
+                                            </div>
+                                            <span class="font-extrabold text-blue-600" x-text="formatCurrency(p.unit_price)"></span>
+                                        </div>
+                                    </template>
+                                    <div x-show="getFilteredProducts(item.displayText).length === 0" class="p-2.5 text-xs text-slate-400 text-center">
+                                        Barang tidak ditemukan.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Price + Qty + Subtotal --}}
+                        <div class="grid grid-cols-3 gap-2">
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Harga Unit</label>
+                                <p class="text-xs font-mono font-semibold text-slate-700 py-2 px-1" x-text="formatCurrency(item.unit_price)"></p>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Qty *</label>
+                                <input type="number"
+                                       :name="'items['+index+'][quantity]'"
+                                       x-model.number="item.quantity"
+                                       @input="calculateSubtotal(index)"
+                                       min="1" required
+                                       class="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-center focus:ring-2 focus:ring-blue-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Subtotal</label>
+                                <p class="text-xs font-extrabold text-slate-900 py-2 text-right" x-text="formatCurrency(item.subtotal)"></p>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+
+            {{-- ── DESKTOP: Table (shown on ≥ md) ── --}}
+            <div class="hidden md:block overflow-x-auto">
                 <table class="w-full text-left text-sm text-slate-600">
                     <thead class="bg-slate-50 text-xs font-bold text-slate-500 uppercase tracking-wider border-b border-slate-200">
                         <tr>
@@ -189,7 +271,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             
             <!-- Additional Notes (Catatan Tambahan) -->
-            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-3">
+            <div class="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-200/80 space-y-3">
                 <label class="block text-xs font-bold text-slate-700 uppercase">3. Invoice Notes / Remarks (Optional)</label>
                 <textarea name="notes" rows="4" placeholder="Enter warranty terms, payment instructions, or special delivery notes..."
                           class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">{{ old('notes') }}</textarea>
@@ -197,7 +279,7 @@
             </div>
 
             <!-- Real-time Live Summary Box -->
-            <div class="bg-slate-900 text-white rounded-2xl p-6 shadow-lg flex flex-col justify-between space-y-4">
+            <div class="bg-slate-900 text-white rounded-2xl p-4 sm:p-6 shadow-lg flex flex-col justify-between space-y-4">
                 <div>
                     <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Live Invoice Summary</h4>
                     <div class="mt-4 space-y-2 text-xs">

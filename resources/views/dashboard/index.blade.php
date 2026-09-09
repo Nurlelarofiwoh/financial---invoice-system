@@ -4,10 +4,10 @@
 <div class="space-y-8">
     
     <!-- Page Header & Quick Actions -->
-    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+    <div class="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-200/80 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
-            <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Financial Overview & Analytics</h1>
-            <p class="text-sm text-slate-500 mt-1">Real-time revenue monitoring, paid vs unpaid recap, and product performance metrics.</p>
+            <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Financial Overview & Analytics</h1>
+            <p class="text-xs sm:text-sm text-slate-500 mt-1">Real-time revenue monitoring, paid vs unpaid recap, and product performance metrics.</p>
         </div>
 
         <div class="flex flex-wrap items-center gap-3">
@@ -24,38 +24,38 @@
     </div>
 
     <!-- Metric Cards Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
         
         <!-- Monthly Revenue Card -->
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 hover:shadow-md transition">
+        <div class="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-200/80 hover:shadow-md transition">
             <div class="flex items-center justify-between">
-                <span class="text-xs font-bold uppercase tracking-wider text-slate-400">This Month Revenue</span>
-                <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-lg">
+                <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400 leading-tight">This Month Revenue</span>
+                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm sm:text-lg shrink-0">
                     💵
                 </div>
             </div>
-            <div class="mt-4">
-                <h2 class="text-2xl font-extrabold text-slate-900">Rp {{ number_format($currentMonthPaidRevenue, 0, ',', '.') }}</h2>
-                <div class="mt-2 flex items-center justify-between text-xs">
-                    <span class="text-slate-500 font-medium">All-time Paid Revenue:</span>
-                    <span class="font-bold text-blue-600">Rp {{ number_format($totalRevenueOverall, 0, ',', '.') }}</span>
+            <div class="mt-3">
+                <h2 class="text-base sm:text-xl lg:text-2xl font-extrabold text-slate-900 break-all leading-tight">Rp {{ number_format($currentMonthPaidRevenue, 0, ',', '.') }}</h2>
+                <div class="mt-2 flex flex-col sm:flex-row sm:items-center sm:justify-between text-xs gap-0.5">
+                    <span class="text-slate-500 font-medium">All-time Paid:</span>
+                    <span class="font-bold text-blue-600 text-[11px] sm:text-xs">Rp {{ number_format($totalRevenueOverall, 0, ',', '.') }}</span>
                 </div>
             </div>
         </div>
 
         <!-- Paid Invoices Card -->
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 hover:shadow-md transition">
+        <div class="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-200/80 hover:shadow-md transition">
             <div class="flex items-center justify-between">
-                <span class="text-xs font-bold uppercase tracking-wider text-emerald-600">Paid Invoices</span>
-                <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-lg">
+                <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-emerald-600 leading-tight">Paid Invoices</span>
+                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm sm:text-lg shrink-0">
                     ✅
                 </div>
             </div>
-            <div class="mt-4">
-                <h2 class="text-2xl font-extrabold text-emerald-600">Rp {{ number_format($paidInvoicesAmount, 0, ',', '.') }}</h2>
-                <div class="mt-2 flex items-center justify-between text-xs">
-                    <span class="text-slate-500 font-medium">Total Paid Count:</span>
-                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
+            <div class="mt-3">
+                <h2 class="text-base sm:text-xl lg:text-2xl font-extrabold text-emerald-600 break-all leading-tight">Rp {{ number_format($paidInvoicesAmount, 0, ',', '.') }}</h2>
+                <div class="mt-2 flex flex-col sm:flex-row sm:items-center sm:justify-between text-xs gap-0.5">
+                    <span class="text-slate-500 font-medium">Paid Count:</span>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-emerald-100 text-emerald-800">
                         {{ $paidInvoicesCount }} Invoices
                     </span>
                 </div>
@@ -63,18 +63,18 @@
         </div>
 
         <!-- Unpaid Invoices Card -->
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 hover:shadow-md transition">
+        <div class="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-200/80 hover:shadow-md transition">
             <div class="flex items-center justify-between">
-                <span class="text-xs font-bold uppercase tracking-wider text-amber-600">Unpaid Invoices</span>
-                <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-lg">
+                <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-amber-600 leading-tight">Unpaid Invoices</span>
+                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-sm sm:text-lg shrink-0">
                     ⏳
                 </div>
             </div>
-            <div class="mt-4">
-                <h2 class="text-2xl font-extrabold text-amber-600">Rp {{ number_format($unpaidInvoicesAmount, 0, ',', '.') }}</h2>
-                <div class="mt-2 flex items-center justify-between text-xs">
-                    <span class="text-slate-500 font-medium">Pending Payments:</span>
-                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800">
+            <div class="mt-3">
+                <h2 class="text-base sm:text-xl lg:text-2xl font-extrabold text-amber-600 break-all leading-tight">Rp {{ number_format($unpaidInvoicesAmount, 0, ',', '.') }}</h2>
+                <div class="mt-2 flex flex-col sm:flex-row sm:items-center sm:justify-between text-xs gap-0.5">
+                    <span class="text-slate-500 font-medium">Pending:</span>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-amber-100 text-amber-800">
                         {{ $unpaidInvoicesCount }} Pending
                     </span>
                 </div>
@@ -82,18 +82,18 @@
         </div>
 
         <!-- Overdue Invoices Card -->
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 hover:shadow-md transition">
+        <div class="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-200/80 hover:shadow-md transition">
             <div class="flex items-center justify-between">
-                <span class="text-xs font-bold uppercase tracking-wider text-rose-600">Overdue Invoices</span>
-                <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-lg">
+                <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-rose-600 leading-tight">Overdue Invoices</span>
+                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-sm sm:text-lg shrink-0">
                     ⚠️
                 </div>
             </div>
-            <div class="mt-4">
-                <h2 class="text-2xl font-extrabold text-rose-600">Rp {{ number_format($overdueInvoicesAmount, 0, ',', '.') }}</h2>
-                <div class="mt-2 flex items-center justify-between text-xs">
+            <div class="mt-3">
+                <h2 class="text-base sm:text-xl lg:text-2xl font-extrabold text-rose-600 break-all leading-tight">Rp {{ number_format($overdueInvoicesAmount, 0, ',', '.') }}</h2>
+                <div class="mt-2 flex flex-col sm:flex-row sm:items-center sm:justify-between text-xs gap-0.5">
                     <span class="text-slate-500 font-medium">Action Required:</span>
-                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-rose-100 text-rose-800">
                         {{ $overdueInvoicesCount }} Overdue
                     </span>
                 </div>
@@ -103,13 +103,13 @@
     </div>
 
     <!-- Charts & Product Analytics Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 sm:gap-8">
         
-        <!-- Monthly Revenue & Profit Visual Chart (2 Cols) -->
-        <div class="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 flex flex-col">
-            <div class="flex items-center justify-between mb-4">
+        <!-- Monthly Revenue & Profit Visual Chart -->
+        <div class="xl:col-span-2 bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-200/80 flex flex-col">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-2">
                 <div>
-                    <h3 class="text-lg font-bold text-slate-900">Monthly Revenue & Profit Overview</h3>
+                    <h3 class="text-base sm:text-lg font-bold text-slate-900">Monthly Revenue & Profit Overview</h3>
                     <p class="text-xs text-slate-500">6-Month historical comparison of paid revenue vs pending invoices</p>
                 </div>
                 <div class="flex items-center space-x-4 text-xs font-semibold">
@@ -124,13 +124,13 @@
                 </div>
             </div>
 
-            <div class="relative flex-grow w-full min-h-[280px]">
+            <div class="relative flex-grow w-full min-h-[200px] sm:min-h-[280px]">
                 <canvas id="monthlyRevenueChart"></canvas>
             </div>
         </div>
 
-        <!-- Product Sales Analytics: "Top Frequent Products" (1 Col) -->
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 flex flex-col">
+        <!-- Product Sales Analytics: "Top Frequent Products" -->
+        <div class="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-200/80 flex flex-col">
             <div class="flex items-center justify-between mb-4">
                 <div>
                     <h3 class="text-lg font-bold text-slate-900">Top Frequent Products</h3>
@@ -178,9 +178,9 @@
 
     <!-- Monthly Financial Breakdown Table -->
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
-        <div class="p-6 border-b border-slate-100 flex items-center justify-between">
+        <div class="p-4 sm:p-6 border-b border-slate-100 flex items-center justify-between">
             <div>
-                <h3 class="text-lg font-bold text-slate-900">Monthly Financial Breakdown</h3>
+                <h3 class="text-base sm:text-lg font-bold text-slate-900">Monthly Financial Breakdown</h3>
                 <p class="text-xs text-slate-500 mt-0.5">Aggregate invoice generation and total income grouped by month/year</p>
             </div>
             <span class="text-xs font-bold px-3 py-1 bg-slate-100 text-slate-600 rounded-full">

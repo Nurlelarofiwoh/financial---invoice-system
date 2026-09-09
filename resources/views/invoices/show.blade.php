@@ -4,16 +4,16 @@
 <div class="max-w-4xl mx-auto space-y-6">
     
     <!-- Action Toolbar (Hidden during print) -->
-    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 flex flex-col md:flex-row items-center justify-between gap-4 no-print">
+    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 no-print">
         <a href="{{ route('invoices.index') }}" class="text-xs font-bold text-slate-600 hover:text-slate-900 flex items-center space-x-1">
             <span>&larr; Back to Invoices</span>
         </a>
 
         <!-- Download & Print Action Buttons -->
-        <div class="flex flex-wrap items-center space-x-2">
+        <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
             
             <!-- Payment Status Form Switcher -->
-            <form method="POST" action="{{ route('invoices.update-status', $invoice->id) }}" class="inline-flex items-center space-x-1 mr-2">
+            <form method="POST" action="{{ route('invoices.update-status', $invoice->id) }}" class="inline-flex items-center">
                 @csrf
                 @method('PATCH')
                 <select name="payment_status" onchange="this.form.submit()" 
@@ -25,23 +25,23 @@
             </form>
 
             <a href="{{ route('invoices.edit', $invoice->id) }}"
-               class="px-3.5 py-2 bg-amber-500 hover:bg-amber-400 text-white font-bold text-xs rounded-xl transition shadow flex items-center space-x-1.5">
+               class="px-3.5 py-2 bg-amber-500 hover:bg-amber-400 text-white font-bold text-xs rounded-xl transition shadow flex items-center space-x-1.5 whitespace-nowrap">
                 <span>✏️ Edit Invoice</span>
             </a>
 
             <button onclick="downloadInvoiceImage('png')" 
-                    class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition shadow flex items-center space-x-1.5">
-                <span>🖼️ Download PNG</span>
+                    class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition shadow flex items-center space-x-1.5 whitespace-nowrap">
+                <span>🖼️ PNG</span>
             </button>
 
             <button onclick="downloadInvoiceImage('jpg')" 
-                    class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl transition shadow flex items-center space-x-1.5">
-                <span>🖼️ Download JPG</span>
+                    class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl transition shadow flex items-center space-x-1.5 whitespace-nowrap">
+                <span>🖼️ JPG</span>
             </button>
 
             <button onclick="window.print()" 
-                    class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition shadow flex items-center space-x-1.5">
-                <span>🖨️ Print / Save PDF</span>
+                    class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition shadow flex items-center space-x-1.5 whitespace-nowrap">
+                <span>🖨️ Print / PDF</span>
             </button>
         </div>
     </div>
