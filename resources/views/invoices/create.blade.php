@@ -66,7 +66,7 @@
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div>
                     <h3 class="font-bold text-slate-900 text-base sm:text-lg">2. Dynamic Line Items</h3>
-                    <p class="text-xs text-slate-500 hidden sm:block">Ketik kata kunci nama produk untuk mencari barang.</p>
+                    <p class="text-xs text-slate-500 hidden sm:block">Ketik nama produk atau klik panah untuk memilih (<span class="font-bold text-blue-600" x-text="availableProducts.length"></span> produk tersedia).</p>
                 </div>
                 <button type="button" @click="addRow()" 
                         class="inline-flex items-center px-3.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 font-bold text-xs rounded-xl transition">
@@ -156,8 +156,7 @@
                 </template>
             </div>
 
-            {{-- ── DESKTOP: Table (shown on ≥ md) ── --}}
-            <div class="hidden md:block overflow-x-auto">
+            {{-- ── DESKTOP: Table (sh            <div class="hidden md:block overflow-visible min-h-[350px]">
                 <table class="w-full text-left text-sm text-slate-600">
                     <thead class="bg-slate-50 text-xs font-bold text-slate-500 uppercase tracking-wider border-b border-slate-200">
                         <tr>
@@ -192,11 +191,12 @@
                                             <input type="text" 
                                                    x-model="item.displayText" 
                                                    @focus="item.open = true" 
-                                                   @input="item.open = true"
-                                                   placeholder="🔍 Ketik nama produk..." 
+                                                   @click="item.open = true"
+                                                   @input="item.open = true" 
+                                                   placeholder="🔍 Ketik nama atau klik panah untuk memilih..." 
                                                    required
                                                    class="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-900 focus:ring-2 focus:ring-blue-500 outline-none pr-7">
-                                            <button type="button" @click="item.open = !item.open" class="absolute right-2 top-2 text-slate-400 text-xs">
+                                            <button type="button" @click.stop="item.open = !item.open" class="absolute right-2 top-2 text-slate-400 hover:text-slate-700 text-xs p-0.5">
                                                 ▼
                                             </button>
                                         </div>
@@ -204,7 +204,7 @@
                                         <!-- Filtered Dropdown Options List -->
                                         <div x-show="item.open" 
                                              x-cloak 
-                                             class="absolute z-50 left-0 right-0 mt-1 max-h-52 overflow-y-auto bg-white rounded-xl border border-slate-200 shadow-2xl divide-y divide-slate-100 text-xs">
+                                             class="absolute z-50 left-0 right-0 mt-1 max-h-56 overflow-y-auto bg-white rounded-xl border border-slate-300 shadow-2xl divide-y divide-slate-100 text-xs">ide-y divide-slate-100 text-xs">
                                             <template x-for="p in getFilteredProducts(item.displayText)" :key="p.id">
                                                 <div @click="selectProduct(index, p)" 
                                                      class="px-3 py-2 hover:bg-blue-50 cursor-pointer flex items-center justify-between transition">

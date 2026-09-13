@@ -14,14 +14,23 @@ chown -R www-data:www-data storage bootstrap/cache database
 # If DB_CONNECTION is not set or set to mysql but DB_HOST is empty, 127.0.0.1, or localhost,
 # Render cannot connect to a local MySQL because no MySQL is running in the container.
 # In this case, fallback to SQLite so the site boots up and functions properly.
-if [ -z "$DB_CONNECTION" ] || [ "$DB_CONNECTION" = "sqlite" ] || { [ "$DB_CONNECTION" = "mysql" ] && { [ -z "$DB_HOST" ] || [ "$DB_HOST" = "127.0.0.1" ] || [ "$DB_HOST" = "localhost" ]; }; }; then
-    if [ "$DB_CONNECTION" = "mysql" ]; then
+USE_SQLITE=0
+if [ -z "$DB_CONNECTION" ] || [ "$DB_CONNECTION" = "sqlite" ]; then
+    USE_SQLITE=1
+elif [ "$DB_CONNECTION" = "mysql" ]; then
+    if [ -z "$DB_HOST" ] || [ "$DB_HOST" = "127.0.0.1" ] || [ "$DB_HOST" = "localhost" ]; then
         echo "⚠️ WARNING: DB_HOST is '$DB_HOST' (localhost)."
         echo "⚠️ There is no MySQL server running inside this container."
         echo "🔄 Automatically switching to SQLite so the application works immediately!"
+        USE_SQLITE=1
     fi
+fi
+
+if [ "$USE_SQLITE" = "1" ]; then
     export DB_CONNECTION=sqlite
     export DB_DATABASE=/var/www/html/database/database.sqlite
+    touch database/database.sqlite
+    chmod 777 database/database.sqlite
 fi
 
 # Check APP_KEY
