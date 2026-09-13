@@ -13,7 +13,7 @@
         <div class="w-full sm:w-auto">
             <a href="{{ route('invoices.create') }}" 
                class="flex sm:inline-flex items-center justify-center px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm rounded-xl transition shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
-               <span class="mr-2">➕</span> Create New Invoice
+               + Create New Invoice
             </a>
         </div>
     </div>
@@ -42,15 +42,15 @@
                 </a>
                 <a href="{{ route('invoices.index', ['status' => 'paid']) }}" 
                    class="px-3.5 py-2 rounded-xl text-xs font-bold transition {{ request('status') === 'paid' ? 'bg-emerald-600 text-white shadow' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' }}">
-                   ✅ Paid
+                   Paid
                 </a>
                 <a href="{{ route('invoices.index', ['status' => 'unpaid']) }}" 
                    class="px-3.5 py-2 rounded-xl text-xs font-bold transition {{ request('status') === 'unpaid' ? 'bg-amber-600 text-white shadow' : 'bg-amber-50 text-amber-700 hover:bg-amber-100' }}">
-                   ⏳ Unpaid
+                   Unpaid
                 </a>
                 <a href="{{ route('invoices.index', ['status' => 'overdue']) }}" 
                    class="px-3.5 py-2 rounded-xl text-xs font-bold transition {{ request('status') === 'overdue' ? 'bg-rose-600 text-white shadow' : 'bg-rose-50 text-rose-700 hover:bg-rose-100' }}">
-                   ⚠️ Overdue
+                   Overdue
                 </a>
             </div>
 
@@ -71,11 +71,11 @@
                             {{ $invoice->invoice_number }}
                         </a>
                         @if($invoice->payment_status === 'paid')
-                            <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">✅ Paid</span>
+                            <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">Paid</span>
                         @elseif($invoice->payment_status === 'unpaid')
-                            <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800">⏳ Unpaid</span>
+                            <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800">Unpaid</span>
                         @else
-                            <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800">⚠️ Overdue</span>
+                            <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800">Overdue</span>
                         @endif
                     </div>
 
@@ -111,11 +111,11 @@
                     <div class="flex items-center gap-2 pt-2 border-t border-slate-100">
                         <a href="{{ route('invoices.show', $invoice->id) }}" 
                            class="flex-1 text-center py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg text-xs font-bold transition">
-                           👁️ View
+                           View
                         </a>
                         <a href="{{ route('invoices.edit', $invoice->id) }}"
                            class="flex-1 text-center py-2 bg-amber-50 hover:bg-amber-100 text-amber-600 rounded-lg text-xs font-bold transition">
-                           ✏️ Edit
+                           Edit
                         </a>
                         <form method="POST" action="{{ route('invoices.destroy', $invoice->id) }}" 
                               class="flex-1"
@@ -123,7 +123,7 @@
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="w-full py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-bold transition">
-                                🗑️ Delete
+                                Delete
                             </button>
                         </form>
                     </div>
@@ -193,7 +193,7 @@
                                     </a>
                                     <a href="{{ route('invoices.edit', $invoice->id) }}"
                                        class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-600 rounded-lg text-xs font-bold transition">
-                                       ✏️ Edit
+                                       Edit
                                     </a>
                                     <form method="POST" action="{{ route('invoices.destroy', $invoice->id) }}" 
                                           onsubmit="return confirm('Are you sure you want to delete invoice {{ $invoice->invoice_number }}?');">

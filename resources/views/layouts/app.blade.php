@@ -146,17 +146,17 @@
                 <nav class="hidden lg:flex items-center space-x-1">
                     <a href="{{ route('dashboard') }}" 
                        class="px-3 py-2 rounded-lg text-sm font-semibold transition-colors {{ request()->routeIs('dashboard') ? 'bg-blue-600 text-white shadow' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                       <span class="mr-1.5">📊</span> Dashboard & Financials
+                       Dashboard & Financials
                     </a>
 
                     <a href="{{ route('invoices.index') }}" 
                        class="px-3 py-2 rounded-lg text-sm font-semibold transition-colors {{ request()->routeIs('invoices.*') ? 'bg-blue-600 text-white shadow' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                       <span class="mr-1.5">📄</span> Invoices
+                       Invoices
                     </a>
 
                     <a href="{{ route('products.index') }}" 
                        class="px-3 py-2 rounded-lg text-sm font-semibold transition-colors {{ request()->routeIs('products.*') ? 'bg-blue-600 text-white shadow' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                       <span class="mr-1.5">🏷️</span> Products
+                       Products
                     </a>
                 </nav>
 
@@ -202,25 +202,25 @@
             <nav class="px-4 py-3 space-y-1">
                 <a href="{{ route('dashboard') }}" 
                    class="flex items-center space-x-3 px-3 py-3 rounded-xl text-sm font-semibold transition {{ request()->routeIs('dashboard') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-700 hover:text-white' }}">
-                   <span class="text-base">📊</span><span>Dashboard & Financials</span>
+                   <span>Dashboard & Financials</span>
                 </a>
                 <a href="{{ route('invoices.index') }}" 
                    class="flex items-center space-x-3 px-3 py-3 rounded-xl text-sm font-semibold transition {{ request()->routeIs('invoices.*') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-700 hover:text-white' }}">
-                   <span class="text-base">📄</span><span>Invoices Management</span>
+                   <span>Invoices Management</span>
                 </a>
                 <a href="{{ route('products.index') }}" 
                    class="flex items-center space-x-3 px-3 py-3 rounded-xl text-sm font-semibold transition {{ request()->routeIs('products.*') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-700 hover:text-white' }}">
-                   <span class="text-base">🏷️</span><span>Product Catalog & Prices</span>
+                   <span>Product Catalog & Prices</span>
                 </a>
                 <!-- Mobile Quick Actions -->
                 <div class="pt-2 border-t border-slate-700 grid grid-cols-2 gap-2">
                     <a href="{{ route('products.create') }}" 
                        class="flex items-center justify-center px-3 py-2.5 border border-slate-600 rounded-xl text-xs font-semibold text-slate-200 hover:bg-slate-700 transition">
-                       ➕ New Product
+                       + New Product
                     </a>
                     <a href="{{ route('invoices.create') }}" 
                        class="flex items-center justify-center px-3 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl transition">
-                       📄 Create Invoice
+                       + Create Invoice
                     </a>
                 </div>
             </nav>
@@ -229,13 +229,13 @@
         <!-- Tablet Bottom Navigation Sub-bar (md only, not lg) -->
         <div class="hidden md:flex lg:hidden bg-slate-800 px-4 py-2 justify-around border-t border-slate-700 text-xs font-medium no-print">
             <a href="{{ route('dashboard') }}" class="flex items-center space-x-1.5 py-1 {{ request()->routeIs('dashboard') ? 'text-blue-400 font-bold' : 'text-slate-300' }}">
-                <span>📊</span><span>Dashboard</span>
+                <span>Dashboard</span>
             </a>
             <a href="{{ route('invoices.index') }}" class="flex items-center space-x-1.5 py-1 {{ request()->routeIs('invoices.*') ? 'text-blue-400 font-bold' : 'text-slate-300' }}">
-                <span>📄</span><span>Invoices</span>
+                <span>Invoices</span>
             </a>
             <a href="{{ route('products.index') }}" class="flex items-center space-x-1.5 py-1 {{ request()->routeIs('products.*') ? 'text-blue-400 font-bold' : 'text-slate-300' }}">
-                <span>🏷️</span><span>Products</span>
+                <span>Products</span>
             </a>
         </div>
     </header>

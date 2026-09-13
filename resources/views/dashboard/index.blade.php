@@ -13,12 +13,12 @@
         <div class="flex flex-wrap items-center gap-3">
             <a href="{{ route('products.index') }}" 
                class="inline-flex items-center px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm rounded-xl transition shadow-sm border border-slate-200">
-               <span class="mr-2">🏷️</span> Update Prices / Products
+               Update Prices / Products
             </a>
             
             <a href="{{ route('invoices.create') }}" 
                class="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm rounded-xl transition shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
-               <span class="mr-2">➕</span> Create New Invoice
+               + Create New Invoice
             </a>
         </div>
     </div>
@@ -31,7 +31,7 @@
             <div class="flex items-center justify-between">
                 <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400 leading-tight">This Month Revenue</span>
                 <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm sm:text-lg shrink-0">
-                    💵
+                    Rp
                 </div>
             </div>
             <div class="mt-3">
@@ -47,8 +47,8 @@
         <div class="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-200/80 hover:shadow-md transition">
             <div class="flex items-center justify-between">
                 <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-emerald-600 leading-tight">Paid Invoices</span>
-                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm sm:text-lg shrink-0">
-                    ✅
+                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm shrink-0">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                 </div>
             </div>
             <div class="mt-3">
@@ -66,8 +66,8 @@
         <div class="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-200/80 hover:shadow-md transition">
             <div class="flex items-center justify-between">
                 <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-amber-600 leading-tight">Unpaid Invoices</span>
-                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-sm sm:text-lg shrink-0">
-                    ⏳
+                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-sm shrink-0">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 </div>
             </div>
             <div class="mt-3">
@@ -85,8 +85,8 @@
         <div class="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-200/80 hover:shadow-md transition">
             <div class="flex items-center justify-between">
                 <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-rose-600 leading-tight">Overdue Invoices</span>
-                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-sm sm:text-lg shrink-0">
-                    ⚠️
+                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-sm shrink-0">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
                 </div>
             </div>
             <div class="mt-3">

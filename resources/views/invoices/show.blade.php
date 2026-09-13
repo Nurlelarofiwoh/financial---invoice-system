@@ -26,22 +26,22 @@
 
             <a href="{{ route('invoices.edit', $invoice->id) }}"
                class="px-3.5 py-2 bg-amber-500 hover:bg-amber-400 text-white font-bold text-xs rounded-xl transition shadow flex items-center space-x-1.5 whitespace-nowrap">
-                <span>✏️ Edit Invoice</span>
+                <span>Edit Invoice</span>
             </a>
 
             <button onclick="downloadInvoiceImage('png')" 
                     class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition shadow flex items-center space-x-1.5 whitespace-nowrap">
-                <span>🖼️ PNG</span>
+                <span>PNG</span>
             </button>
 
             <button onclick="downloadInvoiceImage('jpg')" 
                     class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl transition shadow flex items-center space-x-1.5 whitespace-nowrap">
-                <span>🖼️ JPG</span>
+                <span>JPG</span>
             </button>
 
             <button onclick="window.print()" 
                     class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition shadow flex items-center space-x-1.5 whitespace-nowrap">
-                <span>🖨️ Print / PDF</span>
+                <span>Print / PDF</span>
             </button>
         </div>
     </div>

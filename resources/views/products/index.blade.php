@@ -13,7 +13,7 @@
         <div class="w-full sm:w-auto">
             <a href="{{ route('products.create') }}" 
                class="flex sm:inline-flex items-center justify-center px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl transition shadow-md hover:shadow-lg">
-               <span class="mr-2">➕</span> Add New Product
+               + Add New Product
             </a>
         </div>
     </div>
@@ -94,7 +94,7 @@
                             <button @click="quickPriceModal = true; activeProduct = {{ json_encode($product) }}; newPrice = '{{ $product->unit_price }}'" 
                                     class="text-blue-600 text-xs font-bold bg-blue-50 hover:bg-blue-100 px-2 py-0.5 rounded transition"
                                     title="Quick Edit Price">
-                                ✏️ Edit
+                                Edit
                             </button>
                         </div>
                     </div>
@@ -103,7 +103,7 @@
                     <div class="flex items-center gap-2">
                         <a href="{{ route('products.edit', $product->id) }}" 
                            class="flex-1 text-center py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition">
-                           ✏️ Edit Product
+                           Edit Product
                         </a>
                         <form method="POST" action="{{ route('products.destroy', $product->id) }}" 
                               class="flex-1"
@@ -111,7 +111,7 @@
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="w-full py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-bold transition">
-                                🗑️ Delete
+                                Delete
                             </button>
                         </form>
                     </div>
@@ -158,7 +158,7 @@
                                     <button @click="quickPriceModal = true; activeProduct = {{ json_encode($product) }}; newPrice = '{{ $product->unit_price }}'" 
                                             class="text-blue-600 hover:text-blue-800 text-xs font-bold bg-blue-50 hover:bg-blue-100 px-2 py-0.5 rounded transition"
                                             title="Quick Edit Price">
-                                        ✏️ Edit Price
+                                        Edit Price
                                     </button>
                                 </div>
                             </td>
