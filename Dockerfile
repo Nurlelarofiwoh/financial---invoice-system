@@ -14,11 +14,12 @@ RUN apk add --no-cache \
     libzip-dev \
     zip \
     ca-certificates \
-    icu-dev
+    icu-dev \
+    sqlite-dev
 
 # Install PHP extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo_mysql mbstring gd opcache intl zip bcmath
+    && docker-php-ext-install pdo_mysql pdo_sqlite mbstring gd opcache intl zip bcmath
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -32,10 +33,10 @@ COPY . .
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
 # Create necessary directories and set permissions
-RUN mkdir -p /run/nginx storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs bootstrap/cache \
-    && touch storage/logs/laravel.log \
-    && chown -R www-data:www-data storage bootstrap/cache \
-    && chmod -R 777 storage bootstrap/cache
+RUN mkdir -p /run/nginx storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs bootstrap/cache database \
+    && touch storage/logs/laravel.log database/database.sqlite \
+    && chown -R www-data:www-data storage bootstrap/cache database \
+    && chmod -R 777 storage bootstrap/cache database
 
 # Copy configuration files
 COPY nginx.conf /etc/nginx/nginx.conf

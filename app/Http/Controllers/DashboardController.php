@@ -33,11 +33,15 @@ class DashboardController extends Controller
         $overdueInvoicesCount = Invoice::where('payment_status', 'overdue')->count();
         $overdueInvoicesAmount = Invoice::where('payment_status', 'overdue')->sum('total_amount');
 
+        $isSqlite = DB::connection()->getDriverName() === 'sqlite';
+        $monthKeySql = $isSqlite ? "strftime('%Y-%m', issue_date)" : "DATE_FORMAT(issue_date, '%Y-%m')";
+        $monthLabelSql = $isSqlite ? "strftime('%Y-%m', issue_date)" : "DATE_FORMAT(issue_date, '%M %Y')";
+
         // 2. Monthly Financial Breakdown Table (grouped by Month & Year)
         $monthlyBreakdown = DB::table('invoices')
             ->select(
-                DB::raw("DATE_FORMAT(issue_date, '%Y-%m') as month_key"),
-                DB::raw("DATE_FORMAT(issue_date, '%M %Y') as month_label"),
+                DB::raw("$monthKeySql as month_key"),
+                DB::raw("$monthLabelSql as month_label"),
                 DB::raw("COUNT(id) as total_invoices"),
                 DB::raw("SUM(CASE WHEN payment_status = 'paid' THEN total_amount ELSE 0 END) as paid_revenue"),
                 DB::raw("SUM(CASE WHEN payment_status != 'paid' THEN total_amount ELSE 0 END) as pending_amount"),
@@ -46,6 +50,17 @@ class DashboardController extends Controller
             ->groupBy('month_key', 'month_label')
             ->orderBy('month_key', 'desc')
             ->get();
+
+        if ($isSqlite) {
+            $monthlyBreakdown = $monthlyBreakdown->map(function ($item) {
+                try {
+                    $item->month_label = Carbon::createFromFormat('Y-m', $item->month_key)->format('F Y');
+                } catch (\Exception $e) {
+                    // keep original if parsing fails
+                }
+                return $item;
+            });
+        }
 
         // 3. Past 6 Months Chart Data
         $chartLabels = [];

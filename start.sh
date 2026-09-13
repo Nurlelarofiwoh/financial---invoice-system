@@ -3,11 +3,26 @@ set -e
 
 echo "🚀 Starting MotoShop Web..."
 
-# Create storage directory structure if not present
-mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs
+# Create storage directory structure and database file if not present
+mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs database
 touch storage/logs/laravel.log
-chmod -R 777 storage bootstrap/cache
-chown -R www-data:www-data storage bootstrap/cache
+touch database/database.sqlite
+chmod -R 777 storage bootstrap/cache database
+chown -R www-data:www-data storage bootstrap/cache database
+
+# Check Database Configuration
+# If DB_CONNECTION is not set or set to mysql but DB_HOST is empty, 127.0.0.1, or localhost,
+# Render cannot connect to a local MySQL because no MySQL is running in the container.
+# In this case, fallback to SQLite so the site boots up and functions properly.
+if [ -z "$DB_CONNECTION" ] || [ "$DB_CONNECTION" = "sqlite" ] || { [ "$DB_CONNECTION" = "mysql" ] && { [ -z "$DB_HOST" ] || [ "$DB_HOST" = "127.0.0.1" ] || [ "$DB_HOST" = "localhost" ]; }; }; then
+    if [ "$DB_CONNECTION" = "mysql" ]; then
+        echo "⚠️ WARNING: DB_HOST is '$DB_HOST' (localhost)."
+        echo "⚠️ There is no MySQL server running inside this container."
+        echo "🔄 Automatically switching to SQLite so the application works immediately!"
+    fi
+    export DB_CONNECTION=sqlite
+    export DB_DATABASE=/var/www/html/database/database.sqlite
+fi
 
 # Check APP_KEY
 if [ -z "$APP_KEY" ]; then
@@ -25,11 +40,16 @@ php artisan view:cache || true
 echo "🗄️ Running database migrations..."
 php artisan migrate --force || echo "⚠️ Database migration failed or skipped (check DB connection)"
 
+# Seed initial product data if needed
+echo "🌱 Seeding initial data..."
+php artisan db:seed --force || true
+
 # Re-apply full permissions after artisan commands run as root
 echo "🔒 Fixing permissions for www-data..."
 touch storage/logs/laravel.log
-chown -R www-data:www-data storage bootstrap/cache
-chmod -R 777 storage bootstrap/cache
+touch database/database.sqlite
+chown -R www-data:www-data storage bootstrap/cache database
+chmod -R 777 storage bootstrap/cache database
 
 echo "✅ App initialization complete!"
 
