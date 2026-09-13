@@ -5,7 +5,8 @@ echo "🚀 Starting MotoShop Web..."
 
 # Create storage directory structure if not present
 mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs
-chmod -R 775 storage bootstrap/cache
+touch storage/logs/laravel.log
+chmod -R 777 storage bootstrap/cache
 chown -R www-data:www-data storage bootstrap/cache
 
 # Check APP_KEY
@@ -23,6 +24,12 @@ php artisan view:cache || true
 # Run database migrations
 echo "🗄️ Running database migrations..."
 php artisan migrate --force || echo "⚠️ Database migration failed or skipped (check DB connection)"
+
+# Re-apply full permissions after artisan commands run as root
+echo "🔒 Fixing permissions for www-data..."
+touch storage/logs/laravel.log
+chown -R www-data:www-data storage bootstrap/cache
+chmod -R 777 storage bootstrap/cache
 
 echo "✅ App initialization complete!"
 

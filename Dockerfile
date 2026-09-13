@@ -32,9 +32,10 @@ COPY . .
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
 # Create necessary directories and set permissions
-RUN mkdir -p /run/nginx storage/framework/cache/data storage/framework/sessions storage/framework/views bootstrap/cache \
-    && chmod -R 775 storage bootstrap/cache \
-    && chown -R www-data:www-data storage bootstrap/cache
+RUN mkdir -p /run/nginx storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs bootstrap/cache \
+    && touch storage/logs/laravel.log \
+    && chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 777 storage bootstrap/cache
 
 # Copy configuration files
 COPY nginx.conf /etc/nginx/nginx.conf
