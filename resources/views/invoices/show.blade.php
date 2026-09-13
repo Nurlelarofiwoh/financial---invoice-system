@@ -72,10 +72,10 @@
                     </span>
                     <h3 class="text-2xl font-mono font-extrabold tracking-tight text-white">{{ $invoice->invoice_number }}</h3>
                     
-                    <!-- Status Badge (Perfectly centered table pill box) -->
-                    <div style="margin-top:10px; display:inline-table; height:26px; border-collapse:collapse; vertical-align:middle; padding:0 16px; border-radius:9999px;
+                    <!-- Status Badge (Spacious & centered pill box) -->
+                    <div style="margin-top:10px; display:inline-block; padding:7px 20px; border-radius:9999px; text-align:center; line-height:1; vertical-align:middle;
                         {{ $invoice->payment_status === 'paid' ? 'background:#10b981; color:#ffffff;' : ($invoice->payment_status === 'unpaid' ? 'background:#f59e0b; color:#0f172a;' : 'background:#dc2626; color:#ffffff;') }}">
-                        <span style="display:table-cell; vertical-align:middle; text-align:center; font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:.06em; line-height:1; white-space:nowrap;">
+                        <span style="display:inline-block; font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; line-height:1; vertical-align:middle; margin:0; padding:0;">
                             STATUS : {{ strtoupper($invoice->payment_status) }}
                         </span>
                     </div>
