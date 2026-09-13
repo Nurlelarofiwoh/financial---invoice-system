@@ -47,10 +47,10 @@
     </div>
 
     <!-- Printable Invoice Document Box -->
-    <div id="invoice-document" class="bg-white rounded-2xl shadow-xl border border-slate-200/80 overflow-hidden print-container">
+    <div id="invoice-document" class="bg-white shadow-xl border border-slate-200/80 overflow-hidden print-container" style="border-radius: 1rem;">
         
         <!-- Dark Slate Invoice Header (Seamless Edges) -->
-        <div class="bg-slate-900 text-white p-6 sm:p-8 rounded-t-2xl -mt-px -mx-px border-b border-slate-800">
+        <div class="bg-slate-900 text-white p-6 sm:p-8 border-b border-slate-800" style="border-radius: 1rem 1rem 0 0;">
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
                 
                 <!-- Company Branding -->
@@ -73,9 +73,9 @@
                     <h3 class="text-2xl font-mono font-extrabold tracking-tight text-white">{{ $invoice->invoice_number }}</h3>
                     
                     <!-- Status Badge (Perfectly centered pill) -->
-                    <div class="mt-2.5 inline-flex items-center justify-center px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider leading-none shadow-sm
-                        {{ $invoice->payment_status === 'paid' ? 'bg-emerald-500 text-white' : ($invoice->payment_status === 'unpaid' ? 'bg-amber-500 text-slate-950' : 'bg-rose-600 text-white') }}">
-                        <span class="inline-block pt-0.5">STATUS : {{ strtoupper($invoice->payment_status) }}</span>
+                    <div style="margin-top:10px; display:inline-flex; align-items:center; justify-content:center; padding:5px 16px; border-radius:9999px; font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:.06em; line-height:1; white-space:nowrap;
+                        {{ $invoice->payment_status === 'paid' ? 'background:#10b981; color:#ffffff;' : ($invoice->payment_status === 'unpaid' ? 'background:#f59e0b; color:#0f172a;' : 'background:#dc2626; color:#ffffff;') }}">
+                        STATUS : {{ strtoupper($invoice->payment_status) }}
                     </div>
                 </div>
 
@@ -207,15 +207,49 @@
     function downloadInvoiceImage(format) {
         const element = document.getElementById('invoice-document');
         const invNum = '{{ $invoice->invoice_number }}';
+        const radius = 16; // 1rem = 16px, matches border-radius: 1rem
 
         html2canvas(element, {
-            scale: 2,
+            scale: 3,
             useCORS: true,
-            backgroundColor: '#ffffff'
+            allowTaint: true,
+            backgroundColor: null,
+            logging: false
         }).then(canvas => {
+            // Create a new canvas with rounded corners so exported image has no white corners
+            const roundedCanvas = document.createElement('canvas');
+            roundedCanvas.width = canvas.width;
+            roundedCanvas.height = canvas.height;
+            const ctx = roundedCanvas.getContext('2d');
+
+            const r = radius * 3; // scale matches html2canvas scale:3
+            const w = canvas.width;
+            const h = canvas.height;
+
+            // Draw rounded-rectangle clip path
+            ctx.beginPath();
+            ctx.moveTo(r, 0);
+            ctx.lineTo(w - r, 0);
+            ctx.quadraticCurveTo(w, 0, w, r);
+            ctx.lineTo(w, h - r);
+            ctx.quadraticCurveTo(w, h, w - r, h);
+            ctx.lineTo(r, h);
+            ctx.quadraticCurveTo(0, h, 0, h - r);
+            ctx.lineTo(0, r);
+            ctx.quadraticCurveTo(0, 0, r, 0);
+            ctx.closePath();
+            ctx.clip();
+
+            // Fill white background first (for JPG)
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, w, h);
+
+            // Draw the captured invoice on top
+            ctx.drawImage(canvas, 0, 0);
+
             const link = document.createElement('a');
             link.download = invNum + '.' + format;
-            link.href = canvas.toDataURL('image/' + (format === 'jpg' ? 'jpeg' : 'png'), 0.95);
+            link.href = roundedCanvas.toDataURL('image/' + (format === 'jpg' ? 'jpeg' : 'png'), 0.97);
             link.click();
         });
     }
