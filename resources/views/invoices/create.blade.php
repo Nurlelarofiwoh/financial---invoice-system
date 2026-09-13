@@ -156,7 +156,8 @@
                 </template>
             </div>
 
-            {{-- ── DESKTOP: Table (sh            <div class="hidden md:block overflow-visible min-h-[350px]">
+            {{-- ── DESKTOP: Table (shown on ≥ md) ── --}}
+            <div class="hidden md:block overflow-visible min-h-[350px]">
                 <table class="w-full text-left text-sm text-slate-600">
                     <thead class="bg-slate-50 text-xs font-bold text-slate-500 uppercase tracking-wider border-b border-slate-200">
                         <tr>
@@ -204,7 +205,7 @@
                                         <!-- Filtered Dropdown Options List -->
                                         <div x-show="item.open" 
                                              x-cloak 
-                                             class="absolute z-50 left-0 right-0 mt-1 max-h-56 overflow-y-auto bg-white rounded-xl border border-slate-300 shadow-2xl divide-y divide-slate-100 text-xs">ide-y divide-slate-100 text-xs">
+                                             class="absolute z-50 left-0 right-0 mt-1 max-h-56 overflow-y-auto bg-white rounded-xl border border-slate-300 shadow-2xl divide-y divide-slate-100 text-xs">
                                             <template x-for="p in getFilteredProducts(item.displayText)" :key="p.id">
                                                 <div @click="selectProduct(index, p)" 
                                                      class="px-3 py-2 hover:bg-blue-50 cursor-pointer flex items-center justify-between transition">
