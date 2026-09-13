@@ -72,10 +72,12 @@
                     </span>
                     <h3 class="text-2xl font-mono font-extrabold tracking-tight text-white">{{ $invoice->invoice_number }}</h3>
                     
-                    <!-- Status Badge (Perfectly centered pill) -->
-                    <div style="margin-top:10px; display:inline-flex; align-items:center; justify-content:center; padding:5px 16px; border-radius:9999px; font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:.06em; line-height:1; white-space:nowrap;
+                    <!-- Status Badge (Perfectly centered table pill box) -->
+                    <div style="margin-top:10px; display:inline-table; height:26px; border-collapse:collapse; vertical-align:middle; padding:0 16px; border-radius:9999px;
                         {{ $invoice->payment_status === 'paid' ? 'background:#10b981; color:#ffffff;' : ($invoice->payment_status === 'unpaid' ? 'background:#f59e0b; color:#0f172a;' : 'background:#dc2626; color:#ffffff;') }}">
-                        STATUS : {{ strtoupper($invoice->payment_status) }}
+                        <span style="display:table-cell; vertical-align:middle; text-align:center; font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:.06em; line-height:1; white-space:nowrap;">
+                            STATUS : {{ strtoupper($invoice->payment_status) }}
+                        </span>
                     </div>
                 </div>
 
@@ -205,28 +207,73 @@
 @push('scripts')
 <script>
     function downloadInvoiceImage(format) {
-        const element = document.getElementById('invoice-document');
+        const original = document.getElementById('invoice-document');
         const invNum = '{{ $invoice->invoice_number }}';
-        const radius = 16; // 1rem = 16px, matches border-radius: 1rem
+        const radius = 16; // 1rem = 16px
 
-        html2canvas(element, {
+        // Clone element to force fixed desktop width (950px) for landscape high-detail rendering on all devices
+        const clone = original.cloneNode(true);
+        clone.id = 'invoice-document-export';
+        clone.style.position = 'absolute';
+        clone.style.left = '-9999px';
+        clone.style.top = '0';
+        clone.style.width = '950px';
+        clone.style.minWidth = '950px';
+
+        // Force key responsive containers in clone to desktop row/grid layouts
+        const headerFlex = clone.querySelector('.bg-slate-900 > div');
+        if (headerFlex) {
+            headerFlex.style.display = 'flex';
+            headerFlex.style.flexDirection = 'row';
+            headerFlex.style.alignItems = 'center';
+            headerFlex.style.justifyContent = 'space-between';
+        }
+
+        const headerRight = clone.querySelector('.bg-slate-900 .text-left');
+        if (headerRight) {
+            headerRight.style.textAlign = 'right';
+            headerRight.style.alignItems = 'flex-end';
+        }
+
+        const gridInfo = clone.querySelector('.grid-cols-1');
+        if (gridInfo) {
+            gridInfo.style.display = 'grid';
+            gridInfo.style.gridTemplateColumns = 'repeat(2, minmax(0, 1fr))';
+        }
+
+        const gridInfoRight = clone.querySelector('.md\\:text-right');
+        if (gridInfoRight) {
+            gridInfoRight.style.textAlign = 'right';
+        }
+
+        const footerFlex = clone.querySelector('.mt-5.pt-4.border-t.border-slate-200');
+        if (footerFlex) {
+            footerFlex.style.display = 'grid';
+            footerFlex.style.gridTemplateColumns = 'repeat(2, minmax(0, 1fr))';
+        }
+
+        document.body.appendChild(clone);
+
+        html2canvas(clone, {
             scale: 3,
             useCORS: true,
             allowTaint: true,
             backgroundColor: null,
-            logging: false
+            logging: false,
+            width: 950,
+            windowWidth: 1000
         }).then(canvas => {
-            // Create a new canvas with rounded corners so exported image has no white corners
+            document.body.removeChild(clone);
+
             const roundedCanvas = document.createElement('canvas');
             roundedCanvas.width = canvas.width;
             roundedCanvas.height = canvas.height;
             const ctx = roundedCanvas.getContext('2d');
 
-            const r = radius * 3; // scale matches html2canvas scale:3
+            const r = radius * 3;
             const w = canvas.width;
             const h = canvas.height;
 
-            // Draw rounded-rectangle clip path
             ctx.beginPath();
             ctx.moveTo(r, 0);
             ctx.lineTo(w - r, 0);
@@ -240,17 +287,20 @@
             ctx.closePath();
             ctx.clip();
 
-            // Fill white background first (for JPG)
             ctx.fillStyle = '#ffffff';
             ctx.fillRect(0, 0, w, h);
 
-            // Draw the captured invoice on top
             ctx.drawImage(canvas, 0, 0);
 
             const link = document.createElement('a');
             link.download = invNum + '.' + format;
             link.href = roundedCanvas.toDataURL('image/' + (format === 'jpg' ? 'jpeg' : 'png'), 0.97);
             link.click();
+        }).catch(err => {
+            if (document.body.contains(clone)) {
+                document.body.removeChild(clone);
+            }
+            console.error('Failed to export invoice image:', err);
         });
     }
 </script>
