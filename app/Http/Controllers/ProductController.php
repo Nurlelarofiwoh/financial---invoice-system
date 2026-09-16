@@ -38,11 +38,21 @@ class ProductController extends Controller
             $query->where('unit_price', '<=', $request->max_price);
         }
 
-        $products = $query->orderBy('name', 'asc')->paginate(10)->withQueryString();
+        $perPage = (int) $request->input('per_page', 50);
+        if (!in_array($perPage, [10, 25, 50, 100])) {
+            $perPage = 50;
+        }
 
-        $categories = Product::select('category')->distinct()->pluck('category');
+        $products = $query->orderBy('name', 'asc')->paginate($perPage)->withQueryString();
 
-        return view('products.index', compact('products', 'categories'));
+        $totalProducts = Product::count();
+        $categories = Product::select('category')->distinct()->orderBy('category', 'asc')->pluck('category');
+
+        $categoryCounts = Product::select('category', \Illuminate\Support\Facades\DB::raw('count(*) as aggregate'))
+            ->groupBy('category')
+            ->pluck('aggregate', 'category');
+
+        return view('products.index', compact('products', 'categories', 'totalProducts', 'categoryCounts'));
     }
 
     public function create()

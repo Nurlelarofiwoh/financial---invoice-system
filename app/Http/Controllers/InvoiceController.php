@@ -26,7 +26,12 @@ class InvoiceController extends Controller
             $query->where('payment_status', $request->status);
         }
 
-        $invoices = $query->orderBy('issue_date', 'desc')->orderBy('id', 'desc')->paginate(10)->withQueryString();
+        $perPage = (int) $request->input('per_page', 25);
+        if (!in_array($perPage, [10, 25, 50, 100])) {
+            $perPage = 25;
+        }
+
+        $invoices = $query->orderBy('issue_date', 'desc')->orderBy('id', 'desc')->paginate($perPage)->withQueryString();
 
         $statusCounts = [
             'all'     => Invoice::count(),

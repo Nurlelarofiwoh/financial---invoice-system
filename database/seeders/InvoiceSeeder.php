@@ -545,10 +545,16 @@ class InvoiceSeeder extends Seeder
 );
 
         foreach ($invoicesData as $data) {
-            $invoice = Invoice::updateOrCreate(["id" => $data["invoice"]["id"]], $data["invoice"]);
+            $invoice = Invoice::firstOrCreate(["invoice_number" => $data["invoice"]["invoice_number"]], $data["invoice"]);
             foreach ($data["items"] as $item) {
                 $item["invoice_id"] = $invoice->id;
-                InvoiceItem::updateOrCreate(["id" => $item["id"]], $item);
+                InvoiceItem::firstOrCreate([
+                    "invoice_id" => $invoice->id,
+                    "product_id" => $item["product_id"],
+                    "order_date" => $item["order_date"],
+                    "unit_price" => $item["unit_price"],
+                    "quantity"   => $item["quantity"],
+                ], $item);
             }
         }
     }
