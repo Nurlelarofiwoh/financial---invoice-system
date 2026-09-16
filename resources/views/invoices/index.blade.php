@@ -34,25 +34,58 @@
                 </div>
             </div>
 
-            <!-- Status Filter Pills -->
+            <!-- Status Filter Pills with Count Badges -->
             <div class="flex flex-wrap items-center gap-2">
                 <a href="{{ route('invoices.index') }}" 
-                   class="px-3.5 py-2 rounded-xl text-xs font-bold transition {{ !request('status') ? 'bg-slate-900 text-white shadow' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
-                   All Statuses
+                   class="px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 {{ !request('status') ? 'bg-slate-900 text-white shadow' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+                   <span>All Statuses</span>
+                   <span class="px-1.5 py-0.5 rounded-full text-[10px] font-mono {{ !request('status') ? 'bg-slate-700 text-slate-200' : 'bg-slate-200 text-slate-700' }}">
+                       {{ $statusCounts['all'] ?? 0 }}
+                   </span>
                 </a>
                 <a href="{{ route('invoices.index', ['status' => 'paid']) }}" 
-                   class="px-3.5 py-2 rounded-xl text-xs font-bold transition {{ request('status') === 'paid' ? 'bg-emerald-600 text-white shadow' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' }}">
-                   Paid
+                   class="px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 {{ request('status') === 'paid' ? 'bg-emerald-600 text-white shadow' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' }}">
+                   <span>Paid</span>
+                   <span class="px-1.5 py-0.5 rounded-full text-[10px] font-mono {{ request('status') === 'paid' ? 'bg-emerald-800 text-emerald-100' : 'bg-emerald-200 text-emerald-800' }}">
+                       {{ $statusCounts['paid'] ?? 0 }}
+                   </span>
                 </a>
                 <a href="{{ route('invoices.index', ['status' => 'unpaid']) }}" 
-                   class="px-3.5 py-2 rounded-xl text-xs font-bold transition {{ request('status') === 'unpaid' ? 'bg-amber-600 text-white shadow' : 'bg-amber-50 text-amber-700 hover:bg-amber-100' }}">
-                   Unpaid
+                   class="px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 {{ request('status') === 'unpaid' ? 'bg-amber-600 text-white shadow' : 'bg-amber-50 text-amber-700 hover:bg-amber-100' }}">
+                   <span>Unpaid</span>
+                   <span class="px-1.5 py-0.5 rounded-full text-[10px] font-mono {{ request('status') === 'unpaid' ? 'bg-amber-800 text-amber-100' : 'bg-amber-200 text-amber-800' }}">
+                       {{ $statusCounts['unpaid'] ?? 0 }}
+                   </span>
                 </a>
                 <a href="{{ route('invoices.index', ['status' => 'overdue']) }}" 
-                   class="px-3.5 py-2 rounded-xl text-xs font-bold transition {{ request('status') === 'overdue' ? 'bg-rose-600 text-white shadow' : 'bg-rose-50 text-rose-700 hover:bg-rose-100' }}">
-                   Overdue
+                   class="px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 {{ request('status') === 'overdue' ? 'bg-rose-600 text-white shadow' : 'bg-rose-50 text-rose-700 hover:bg-rose-100' }}">
+                   <span>Overdue</span>
+                   <span class="px-1.5 py-0.5 rounded-full text-[10px] font-mono {{ request('status') === 'overdue' ? 'bg-rose-800 text-rose-100' : 'bg-rose-200 text-rose-800' }}">
+                       {{ $statusCounts['overdue'] ?? 0 }}
+                   </span>
                 </a>
             </div>
+
+            @if(request('status') || request('search'))
+                <div class="mt-3 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-600">
+                    <div class="flex items-center space-x-2 font-medium">
+                        <span class="text-slate-400">Filter Aktif:</span>
+                        @if(request('status'))
+                            <span class="px-2 py-0.5 rounded-md font-bold uppercase tracking-wider {{ request('status') === 'paid' ? 'bg-emerald-100 text-emerald-800' : (request('status') === 'unpaid' ? 'bg-amber-100 text-amber-800' : 'bg-rose-100 text-rose-800') }}">
+                                Status: {{ request('status') }}
+                            </span>
+                        @endif
+                        @if(request('search'))
+                            <span class="px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 font-bold">
+                                Cari: "{{ request('search') }}"
+                            </span>
+                        @endif
+                    </div>
+                    <a href="{{ route('invoices.index') }}" class="text-blue-600 hover:text-blue-800 hover:underline font-bold flex items-center gap-1">
+                        &times; Reset Filter (Tampilkan Semua {{ $statusCounts['all'] ?? '' }} Invoice)
+                    </a>
+                </div>
+            @endif
 
         </form>
     </div>
@@ -129,8 +162,16 @@
                     </div>
                 </div>
             @empty
-                <div class="py-10 text-center text-slate-400 text-sm">
-                    No invoices found. Click "+ Create New Invoice" to start billing.
+                <div class="py-12 text-center text-slate-500 text-sm">
+                    @if(request('status') || request('search'))
+                        <p class="font-bold text-slate-800 text-base">Tidak ada invoice {{ request('status') ? 'berstatus ' . strtoupper(request('status')) : '' }} {{ request('search') ? 'dengan pencarian "' . request('search') . '"' : '' }}.</p>
+                        <p class="text-xs text-slate-500 mt-1">Invoice Anda tetap tersimpan aman di sistem. Silakan klik tombol di bawah untuk melihat seluruh {{ $statusCounts['all'] ?? '' }} invoice.</p>
+                        <a href="{{ route('invoices.index') }}" class="mt-4 inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow transition">
+                            Tampilkan Semua Invoice ({{ $statusCounts['all'] ?? 0 }})
+                        </a>
+                    @else
+                        <p class="text-slate-400">Belum ada invoice. Klik "+ Create New Invoice" untuk membuat invoice baru.</p>
+                    @endif
                 </div>
             @endforelse
         </div>
@@ -208,8 +249,16 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="py-8 text-center text-slate-400 text-sm">
-                                No invoices found. Click "+ Create New Invoice" to start billing.
+                            <td colspan="8" class="py-12 text-center text-slate-500 text-sm">
+                                @if(request('status') || request('search'))
+                                    <p class="font-bold text-slate-800 text-base">Tidak ada invoice {{ request('status') ? 'berstatus ' . strtoupper(request('status')) : '' }} {{ request('search') ? 'dengan pencarian "' . request('search') . '"' : '' }}.</p>
+                                    <p class="text-xs text-slate-500 mt-1">Invoice Anda tetap tersimpan aman di sistem. Silakan klik tombol di bawah untuk melihat seluruh {{ $statusCounts['all'] ?? '' }} invoice.</p>
+                                    <a href="{{ route('invoices.index') }}" class="mt-4 inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow transition">
+                                        Tampilkan Semua Invoice ({{ $statusCounts['all'] ?? 0 }})
+                                    </a>
+                                @else
+                                    <p class="text-slate-400">Belum ada invoice. Klik "+ Create New Invoice" untuk membuat invoice baru.</p>
+                                @endif
                             </td>
                         </tr>
                     @endforelse

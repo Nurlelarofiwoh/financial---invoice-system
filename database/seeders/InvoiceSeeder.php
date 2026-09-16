@@ -69,6 +69,51 @@ class InvoiceSeeder extends Seeder
   array (
     'invoice' => 
     array (
+      'id' => 2,
+      'invoice_number' => 'INV-202608-002',
+      'customer_name' => 'Tommy',
+      'customer_email' => 'tommy@example.com',
+      'issue_date' => '2026-08-25',
+      'due_date' => '2026-09-25',
+      'notes' => 'Pembayaran Lunas (Paid)',
+      'total_amount' => 2265000.0,
+      'payment_status' => 'paid',
+    ),
+    'items' => 
+    array (
+      0 => 
+      array (
+        'id' => 5,
+        'order_date' => '2026-08-25',
+        'product_id' => 1,
+        'quantity' => 2,
+        'unit_price' => 225000.0,
+        'subtotal' => 450000.0,
+      ),
+      1 => 
+      array (
+        'id' => 6,
+        'order_date' => '2026-08-25',
+        'product_id' => 2,
+        'quantity' => 5,
+        'unit_price' => 260000.0,
+        'subtotal' => 1300000.0,
+      ),
+      2 => 
+      array (
+        'id' => 7,
+        'order_date' => '2026-08-25',
+        'product_id' => 3,
+        'quantity' => 2,
+        'unit_price' => 257500.0,
+        'subtotal' => 515000.0,
+      ),
+    ),
+  ),
+  2 => 
+  array (
+    'invoice' => 
+    array (
       'id' => 3,
       'invoice_number' => 'INV-202609-001',
       'customer_name' => 'Ropa',
@@ -335,7 +380,7 @@ class InvoiceSeeder extends Seeder
       ),
     ),
   ),
-  2 => 
+  3 => 
   array (
     'invoice' => 
     array (
@@ -407,7 +452,7 @@ class InvoiceSeeder extends Seeder
       ),
     ),
   ),
-  3 => 
+  4 => 
   array (
     'invoice' => 
     array (

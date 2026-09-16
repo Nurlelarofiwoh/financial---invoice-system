@@ -28,7 +28,14 @@ class InvoiceController extends Controller
 
         $invoices = $query->orderBy('issue_date', 'desc')->orderBy('id', 'desc')->paginate(10)->withQueryString();
 
-        return view('invoices.index', compact('invoices'));
+        $statusCounts = [
+            'all'     => Invoice::count(),
+            'paid'    => Invoice::where('payment_status', 'paid')->count(),
+            'unpaid'  => Invoice::where('payment_status', 'unpaid')->count(),
+            'overdue' => Invoice::where('payment_status', 'overdue')->count(),
+        ];
+
+        return view('invoices.index', compact('invoices', 'statusCounts'));
     }
 
     public function create()
@@ -199,10 +206,13 @@ class InvoiceController extends Controller
             'payment_status' => 'required|in:paid,unpaid,overdue',
         ]);
 
+        $newStatus = $request->payment_status;
+        $invoice->update(['payment_status' => $newStatus]);
 
-        $invoice->update(['payment_status' => $request->payment_status]);
+        $statusLabel = ucfirst($newStatus);
 
-        return back()->with('success', 'Invoice ' . $invoice->invoice_number . ' status updated to ' . ucfirst($request->payment_status) . '!');
+        return redirect()->route('invoices.show', $invoice->id)
+            ->with('success', "Status Invoice {$invoice->invoice_number} berhasil diperbarui menjadi '{$statusLabel}'. Invoice tetap tersimpan aman di sistem dan dapat dilihat di tab " . ($newStatus === 'paid' ? "'Paid' atau 'All Statuses'" : "'{$statusLabel}'") . ".");
     }
 
     public function destroy(Invoice $invoice)
