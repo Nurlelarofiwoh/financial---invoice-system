@@ -1,15 +1,13 @@
 <?php
 
-namespace Database\Seeders;
-
 use App\Models\Product;
-use Illuminate\Database\Seeder;
+use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class ProductSeeder extends Seeder
+return new class extends Migration
 {
-    public function run(): void
+    public function up(): void
     {
         $products = array (
   0 => 
@@ -1584,7 +1582,6 @@ class ProductSeeder extends Seeder
   ),
 );
 
-        // Disable foreign key checks to safely refresh products
         Schema::disableForeignKeyConstraints();
         Product::truncate();
         Schema::enableForeignKeyConstraints();
@@ -1593,4 +1590,9 @@ class ProductSeeder extends Seeder
             Product::create($p);
         }
     }
-}
+
+    public function down(): void
+    {
+        //
+    }
+};

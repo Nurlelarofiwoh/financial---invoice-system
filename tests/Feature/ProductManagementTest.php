@@ -12,6 +12,7 @@ class ProductManagementTest extends TestCase
 
     public function test_can_view_product_catalog_with_custom_pagination_and_counts(): void
     {
+        $initialCount = Product::count();
         Product::factory()->count(15)->create([
             'category' => 'Body Full Kasar',
         ]);
@@ -19,7 +20,7 @@ class ProductManagementTest extends TestCase
         $response = $this->get(route('products.index'));
 
         $response->assertStatus(200);
-        $response->assertViewHas('totalProducts', 15);
+        $response->assertViewHas('totalProducts', $initialCount + 15);
         $response->assertViewHas('categoryCounts');
     }
 
