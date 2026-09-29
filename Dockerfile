@@ -39,6 +39,7 @@ RUN mkdir -p /run/nginx storage/framework/cache/data storage/framework/sessions 
     && chmod -R 777 storage bootstrap/cache database
 
 # Copy configuration files
+COPY php.ini /usr/local/etc/php/conf.d/custom.ini
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY start.sh /start.sh
 RUN sed -i 's/\r$//' /start.sh && chmod +x /start.sh

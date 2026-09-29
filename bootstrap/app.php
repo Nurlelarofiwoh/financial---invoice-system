@@ -3,6 +3,9 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
+use Illuminate\Session\TokenMismatchException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -14,5 +17,32 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (TokenMismatchException $e, Request $request) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Sesi kedaluwarsa. Silakan refresh halaman.',
+                    'csrf_token' => csrf_token(),
+                ], 419);
+            }
+
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Sesi formulir sempat kedaluwarsa, namun seluruh data yang Anda input telah diamankan kembali ke formulir. Silakan klik tombol Simpan kembali.');
+        });
+
+        $exceptions->render(function (HttpException $e, Request $request) {
+            if ($e->getStatusCode() === 419) {
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'message' => 'Sesi kedaluwarsa. Silakan refresh halaman.',
+                        'csrf_token' => csrf_token(),
+                    ], 419);
+                }
+
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Sesi formulir sempat kedaluwarsa, namun seluruh data yang Anda input telah diamankan kembali ke formulir. Silakan klik tombol Simpan kembali.');
+            }
+        });
     })->create();
+

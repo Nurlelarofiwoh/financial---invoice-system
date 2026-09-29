@@ -6,6 +6,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0f172a">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? 'Financial Accounting & Invoice System' }} - MotoShop Financials</title>
     
     <!-- Tailwind CSS v4 CDN -->
@@ -275,6 +276,43 @@
             <p>&copy; {{ date('Y') }} 20MOTOSHOP - Financial Accounting & Invoice Application System. Built with Laravel 12 & Alpine.js.</p>
         </div>
     </footer>
+
+    <!-- Session Keep-Alive & CSRF Synchronizer -->
+    <script>
+        (function() {
+            const keepAliveInterval = 2 * 60 * 1000; // 2 minutes
+            
+            function refreshCsrf() {
+                fetch("{{ route('csrf.token') }}", {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(function(res) { return res.json(); })
+                .then(function(data) {
+                    if (data && data.csrf_token) {
+                        const meta = document.querySelector('meta[name="csrf-token"]');
+                        if (meta) meta.setAttribute('content', data.csrf_token);
+                        document.querySelectorAll('input[name="_token"]').forEach(function(input) {
+                            input.value = data.csrf_token;
+                        });
+                    }
+                })
+                .catch(function() {});
+            }
+
+            // Ping every 2 minutes
+            setInterval(refreshCsrf, keepAliveInterval);
+
+            // Ping immediately when page gains focus/visibility
+            document.addEventListener('visibilitychange', function() {
+                if (document.visibilityState === 'visible') {
+                    refreshCsrf();
+                }
+            });
+        })();
+    </script>
 
     @stack('scripts')
 </body>

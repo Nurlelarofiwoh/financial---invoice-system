@@ -1,8 +1,49 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+    $initialItems = $existingItems;
+    if (old('items') && is_array(old('items'))) {
+        $productsById = $products->keyBy('id');
+        $initialItems = collect(old('items'))->map(function($item) use ($productsById) {
+            $pId = $item['product_id'] ?? null;
+            $product = $pId ? ($productsById[$pId] ?? null) : null;
+            $unitPrice = $product ? (float)$product->unit_price : 0;
+            $qty = (int)($item['quantity'] ?? 1);
+            return [
+                'product_id'  => $pId ?? '',
+                'displayText' => $product ? ($product->name . ' (' . $product->product_code . ')') : '',
+                'open'        => false,
+                'order_date'  => $item['order_date'] ?? '',
+                'quantity'    => $qty,
+                'unit_price'  => $unitPrice,
+                'subtotal'    => $qty * $unitPrice,
+            ];
+        })->values();
+    }
+@endphp
+
 <div class="max-w-4xl mx-auto space-y-6" x-data="invoiceEditForm()">
     
+    <!-- Draft Recovery Banner -->
+    <div x-show="hasDraft" x-cloak class="bg-amber-50 border border-amber-300 text-amber-900 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm animate-pulse">
+        <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 rounded-full bg-amber-200 text-amber-800 flex items-center justify-center font-bold text-sm shrink-0">💾</div>
+            <div>
+                <p class="font-bold text-xs sm:text-sm text-amber-900">Ditemukan Draf Tersimpan Otomatis</p>
+                <p class="text-[11px] sm:text-xs text-amber-700">Terdapat data item invoice yang tersimpan di browser Anda dari pengeditan sebelumnya.</p>
+            </div>
+        </div>
+        <div class="flex items-center space-x-2 shrink-0">
+            <button type="button" @click="restoreDraft()" class="px-3.5 py-1.5 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-xl shadow transition">
+                🔄 Pulihkan Draf
+            </button>
+            <button type="button" @click="clearDraft()" class="px-3 py-1.5 bg-white border border-amber-300 hover:bg-amber-100 text-amber-800 font-semibold text-xs rounded-xl transition">
+                Abaikan
+            </button>
+        </div>
+    </div>
+
     <!-- Page Header -->
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
@@ -18,7 +59,7 @@
     </div>
 
     <!-- Edit Form -->
-    <form method="POST" action="{{ route('invoices.update', $invoice->id) }}" class="space-y-6">
+    <form method="POST" action="{{ route('invoices.update', $invoice->id) }}" @submit.prevent="handleSubmit($event)" class="space-y-6">
         @csrf
         @method('PUT')
 
@@ -327,19 +368,138 @@
     function invoiceEditForm() {
         return {
             availableProducts: @json($products),
+            items: @json($initialItems),
+            storageKey: 'motoshop_draft_edit_{{ $invoice->id }}',
+            hasDraft: false,
+            isSubmitting: false,
 
-            // Pre-fill existing items from the database
-            items: @json($existingItems),
+            init() {
+                // Check if local draft exists
+                try {
+                    const saved = localStorage.getItem(this.storageKey);
+                    if (saved) {
+                        const parsed = JSON.parse(saved);
+                        if (parsed && Array.isArray(parsed.items) && parsed.items.length > 0) {
+                            this.hasDraft = true;
+                        }
+                    }
+                } catch(e) {}
 
+                // Auto-save draft on item changes (every 2 seconds debounced)
+                this.$watch('items', () => {
+                    this.saveDraft();
+                });
+            },
+
+            saveDraft() {
+                if (this.isSubmitting) return;
+                try {
+                    const draft = {
+                        customer_name: document.querySelector('[name="customer_name"]')?.value || '',
+                        issue_date: document.querySelector('[name="issue_date"]')?.value || '',
+                        due_date: document.querySelector('[name="due_date"]')?.value || '',
+                        payment_status: document.querySelector('[name="payment_status"]')?.value || '',
+                        notes: document.querySelector('[name="notes"]')?.value || '',
+                        items: this.items,
+                        saved_at: new Date().toLocaleTimeString('id-ID')
+                    };
+                    localStorage.setItem(this.storageKey, JSON.stringify(draft));
+                } catch(e) {}
+            },
+
+            restoreDraft() {
+                try {
+                    const saved = localStorage.getItem(this.storageKey);
+                    if (saved) {
+                        const parsed = JSON.parse(saved);
+                        if (parsed.items && Array.isArray(parsed.items) && parsed.items.length > 0) {
+                            this.items = parsed.items;
+                            if (parsed.customer_name) {
+                                const el = document.querySelector('[name="customer_name"]');
+                                if (el) el.value = parsed.customer_name;
+                            }
+                            if (parsed.issue_date) {
+                                const el = document.querySelector('[name="issue_date"]');
+                                if (el) el.value = parsed.issue_date;
+                            }
+                            if (parsed.due_date) {
+                                const el = document.querySelector('[name="due_date"]');
+                                if (el) el.value = parsed.due_date;
+                            }
+                            if (parsed.payment_status) {
+                                const el = document.querySelector('[name="payment_status"]');
+                                if (el) el.value = parsed.payment_status;
+                            }
+                            if (parsed.notes) {
+                                const el = document.querySelector('[name="notes"]');
+                                if (el) el.value = parsed.notes;
+                            }
+                            this.hasDraft = false;
+                        }
+                    }
+                } catch(e) {
+                    alert('Gagal memuat draf.');
+                }
+            },
+
+            clearDraft() {
+                try {
+                    localStorage.removeItem(this.storageKey);
+                    this.hasDraft = false;
+                } catch(e) {}
+            },
+
+            async handleSubmit(e) {
+                this.isSubmitting = true;
+                const form = e.target;
+
+                // Validate before submit
+                if (this.items.length === 0) {
+                    alert('Harap tambahkan setidaknya 1 produk.');
+                    this.isSubmitting = false;
+                    return;
+                }
+
+                // Check for unselected products
+                const invalid = this.items.some(i => !i.product_id || i.quantity < 1);
+                if (invalid) {
+                    alert('Harap pastikan semua baris item telah memilih produk dan jumlah kuantitas valid.');
+                    this.isSubmitting = false;
+                    return;
+                }
+
+                // Fresh token sync right before submit
+                try {
+                    const res = await fetch("{{ route('csrf.token') }}", {
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+                    const data = await res.json();
+                    if (data && data.csrf_token) {
+                        const tokenInput = form.querySelector('input[name="_token"]');
+                        if (tokenInput) tokenInput.value = data.csrf_token;
+                    }
+                } catch(err) {}
+
+                // Clear storage draft
+                this.clearDraft();
+
+                // Submit form
+                form.submit();
+            },
 
             addRow() {
                 const defaultDate = document.querySelector('[name="issue_date"]')?.value || '';
                 this.items.push({ product_id: '', displayText: '', open: false, order_date: defaultDate, quantity: 1, unit_price: 0, subtotal: 0 });
+                this.saveDraft();
             },
 
             removeRow(index) {
                 if (this.items.length > 1) {
                     this.items.splice(index, 1);
+                    this.saveDraft();
                 }
             },
 
@@ -359,6 +519,7 @@
                 this.items[index].unit_price  = parseFloat(product.unit_price);
                 this.items[index].open        = false;
                 this.calculateSubtotal(index);
+                this.saveDraft();
             },
 
             calculateSubtotal(index) {

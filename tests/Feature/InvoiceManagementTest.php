@@ -62,4 +62,47 @@ class InvoiceManagementTest extends TestCase
             'payment_status' => 'paid',
         ]);
     }
+
+    public function test_csrf_token_endpoint_returns_valid_json(): void
+    {
+        $response = $this->get(route('csrf.token'));
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure(['csrf_token', 'status', 'timestamp']);
+    }
+
+    public function test_can_create_invoice_with_multiple_items(): void
+    {
+        $products = Product::factory()->count(5)->create();
+
+        $items = [];
+        $expectedTotal = 0;
+        foreach ($products as $index => $prod) {
+            $qty = $index + 1;
+            $items[] = [
+                'order_date' => '2026-09-29',
+                'product_id' => $prod->id,
+                'quantity'   => $qty,
+            ];
+            $expectedTotal += ($qty * $prod->unit_price);
+        }
+
+        $response = $this->post(route('invoices.store'), [
+            'customer_name'  => 'Pelanggan Banyak Item',
+            'issue_date'     => '2026-09-29',
+            'due_date'       => '2026-10-15',
+            'payment_status' => 'unpaid',
+            'notes'          => 'Testing invoice with multiple items',
+            'items'          => $items,
+        ]);
+
+        $this->assertDatabaseHas('invoices', [
+            'customer_name' => 'Pelanggan Banyak Item',
+            'total_amount'  => $expectedTotal,
+        ]);
+
+        $invoice = Invoice::where('customer_name', 'Pelanggan Banyak Item')->first();
+        $this->assertCount(5, $invoice->items);
+        $response->assertRedirect(route('invoices.show', $invoice->id));
+    }
 }
