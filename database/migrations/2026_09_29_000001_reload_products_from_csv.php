@@ -1582,12 +1582,8 @@ return new class extends Migration
   ),
 );
 
-        Schema::disableForeignKeyConstraints();
-        Product::truncate();
-        Schema::enableForeignKeyConstraints();
-
         foreach ($products as $p) {
-            Product::create($p);
+            Product::updateOrCreate(['id' => $p['id']], $p);
         }
     }
 

@@ -105,4 +105,42 @@ class InvoiceManagementTest extends TestCase
         $this->assertCount(5, $invoice->items);
         $response->assertRedirect(route('invoices.show', $invoice->id));
     }
+
+    public function test_can_create_invoice_with_large_payload_via_items_json(): void
+    {
+        $products = Product::take(50)->get();
+        if ($products->count() < 10) {
+            $products = Product::factory()->count(50)->create();
+        }
+
+        $items = [];
+        $expectedTotal = 0;
+        foreach ($products as $index => $prod) {
+            $qty = ($index % 5) + 1;
+            $items[] = [
+                'order_date' => '2026-09-29',
+                'product_id' => $prod->id,
+                'quantity'   => $qty,
+            ];
+            $expectedTotal += ($qty * $prod->unit_price);
+        }
+
+        $response = $this->post(route('invoices.store'), [
+            'customer_name'  => 'Pelanggan 50 Items JSON',
+            'issue_date'     => '2026-09-29',
+            'due_date'       => '2026-10-15',
+            'payment_status' => 'unpaid',
+            'notes'          => 'Testing huge invoice items list',
+            'items_json'     => json_encode($items),
+        ]);
+
+        $this->assertDatabaseHas('invoices', [
+            'customer_name' => 'Pelanggan 50 Items JSON',
+            'total_amount'  => $expectedTotal,
+        ]);
+
+        $invoice = Invoice::where('customer_name', 'Pelanggan 50 Items JSON')->first();
+        $this->assertCount(count($items), $invoice->items);
+        $response->assertRedirect(route('invoices.show', $invoice->id));
+    }
 }

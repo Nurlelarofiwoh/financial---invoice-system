@@ -53,6 +53,14 @@ class InvoiceController extends Controller
 
     public function store(Request $request)
     {
+        // Decode items_json if sent as a single unified payload (supports thousands of items)
+        if ($request->filled('items_json')) {
+            $decoded = json_decode($request->input('items_json'), true);
+            if (is_array($decoded) && count($decoded) > 0) {
+                $request->merge(['items' => $decoded]);
+            }
+        }
+
         $validated = $request->validate([
             'customer_name'           => 'nullable|string|max:255',
             'issue_date'              => 'required|date',
@@ -75,39 +83,54 @@ class InvoiceController extends Controller
 
             $invoice = Invoice::create([
                 'invoice_number' => $invoiceNumber,
-                'customer_name' => $customerName,
+                'customer_name'  => $customerName,
                 'customer_email' => null,
-                'issue_date' => $validated['issue_date'],
-                'due_date' => $validated['due_date'],
-                'notes' => $validated['notes'] ?? null,
+                'issue_date'     => $validated['issue_date'],
+                'due_date'       => $validated['due_date'],
+                'notes'          => $validated['notes'] ?? null,
                 'payment_status' => $validated['payment_status'],
-                'total_amount' => 0,
+                'total_amount'   => 0,
             ]);
 
+            // Bulk load all referenced products in 1 query for ultra-fast execution
+            $productIds = collect($validated['items'])->pluck('product_id')->unique();
+            $productsById = Product::whereIn('id', $productIds)->get()->keyBy('id');
+
             $totalAmount = 0;
+            $itemsToInsert = [];
+            $now = now();
 
             foreach ($validated['items'] as $itemData) {
-                $product = Product::findOrFail($itemData['product_id']);
+                $product = $productsById->get($itemData['product_id']);
+                if (!$product) continue;
+
                 $qty = (int) $itemData['quantity'];
                 $unitPrice = (float) $product->unit_price;
                 $subtotal = $qty * $unitPrice;
                 $totalAmount += $subtotal;
 
-                InvoiceItem::create([
+                $itemsToInsert[] = [
                     'invoice_id' => $invoice->id,
                     'order_date' => $itemData['order_date'],
                     'product_id' => $product->id,
                     'quantity'   => $qty,
                     'unit_price' => $unitPrice,
                     'subtotal'   => $subtotal,
-                ]);
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
+            }
+
+            // Chunk insert in batches of 200 to support unlimited items seamlessly
+            foreach (array_chunk($itemsToInsert, 200) as $chunk) {
+                InvoiceItem::insert($chunk);
             }
 
             $invoice->update(['total_amount' => $totalAmount]);
         });
 
         return redirect()->route('invoices.show', $invoice->id)
-            ->with('success', 'Invoice ' . $invoice->invoice_number . ' created successfully!');
+            ->with('success', 'Invoice ' . $invoice->invoice_number . ' created successfully (' . count($validated['items']) . ' items)!');
     }
 
     public function show(Invoice $invoice)
@@ -148,6 +171,14 @@ class InvoiceController extends Controller
 
     public function update(Request $request, Invoice $invoice)
     {
+        // Decode items_json if sent as a single unified payload
+        if ($request->filled('items_json')) {
+            $decoded = json_decode($request->input('items_json'), true);
+            if (is_array($decoded) && count($decoded) > 0) {
+                $request->merge(['items' => $decoded]);
+            }
+        }
+
         $validated = $request->validate([
             'customer_name'           => 'nullable|string|max:255',
             'issue_date'              => 'required|date',
@@ -178,30 +209,44 @@ class InvoiceController extends Controller
             // Remove all existing items and re-create from form
             $invoice->items()->delete();
 
+            // Bulk load all referenced products in 1 query
+            $productIds = collect($validated['items'])->pluck('product_id')->unique();
+            $productsById = Product::whereIn('id', $productIds)->get()->keyBy('id');
+
             $totalAmount = 0;
+            $itemsToInsert = [];
+            $now = now();
 
             foreach ($validated['items'] as $itemData) {
-                $product   = Product::findOrFail($itemData['product_id']);
+                $product   = $productsById->get($itemData['product_id']);
+                if (!$product) continue;
+
                 $qty       = (int) $itemData['quantity'];
                 $unitPrice = (float) $product->unit_price;
                 $subtotal  = $qty * $unitPrice;
                 $totalAmount += $subtotal;
 
-                InvoiceItem::create([
+                $itemsToInsert[] = [
                     'invoice_id' => $invoice->id,
                     'order_date' => $itemData['order_date'],
                     'product_id' => $product->id,
                     'quantity'   => $qty,
                     'unit_price' => $unitPrice,
                     'subtotal'   => $subtotal,
-                ]);
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
+            }
+
+            foreach (array_chunk($itemsToInsert, 200) as $chunk) {
+                InvoiceItem::insert($chunk);
             }
 
             $invoice->update(['total_amount' => $totalAmount]);
         });
 
         return redirect()->route('invoices.show', $invoice->id)
-            ->with('success', 'Invoice ' . $invoice->invoice_number . ' updated successfully!');
+            ->with('success', 'Invoice ' . $invoice->invoice_number . ' updated successfully (' . count($validated['items']) . ' items)!');
     }
 
 

@@ -1584,13 +1584,8 @@ class ProductSeeder extends Seeder
   ),
 );
 
-        // Disable foreign key checks to safely refresh products
-        Schema::disableForeignKeyConstraints();
-        Product::truncate();
-        Schema::enableForeignKeyConstraints();
-
         foreach ($products as $p) {
-            Product::create($p);
+            Product::updateOrCreate(['id' => $p['id']], $p);
         }
     }
 }

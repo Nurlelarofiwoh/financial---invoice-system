@@ -81,6 +81,7 @@
     <!-- Invoice Creation Form Card -->
     <form method="POST" action="{{ route('invoices.store') }}" @submit.prevent="handleSubmit($event)" class="space-y-6">
         @csrf
+        <input type="hidden" name="items_json" :value="JSON.stringify(items.filter(i => i.product_id != ''))">
 
         <!-- Customer & Date Metadata -->
         <div class="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-200/80 space-y-5">

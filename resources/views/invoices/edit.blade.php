@@ -62,6 +62,7 @@
     <form method="POST" action="{{ route('invoices.update', $invoice->id) }}" @submit.prevent="handleSubmit($event)" class="space-y-6">
         @csrf
         @method('PUT')
+        <input type="hidden" name="items_json" :value="JSON.stringify(items.filter(i => i.product_id != ''))">
 
         <!-- Customer & Date Metadata -->
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-5">
