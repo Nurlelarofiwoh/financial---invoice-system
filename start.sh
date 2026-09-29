@@ -24,13 +24,26 @@ elif [ "$DB_CONNECTION" = "mysql" ]; then
         echo "🔄 Automatically switching to SQLite so the application works immediately!"
         USE_SQLITE=1
     fi
+elif [ "$DB_CONNECTION" = "pgsql" ] || [ "$DB_CONNECTION" = "postgresql" ]; then
+    if [ -z "$DB_HOST" ] || [ "$DB_HOST" = "127.0.0.1" ] || [ "$DB_HOST" = "localhost" ]; then
+        echo "⚠️ WARNING: DB_HOST is not set for PostgreSQL."
+        USE_SQLITE=1
+    fi
 fi
 
 if [ "$USE_SQLITE" = "1" ]; then
     export DB_CONNECTION=sqlite
-    export DB_DATABASE=/var/www/html/database/database.sqlite
-    touch database/database.sqlite
-    chmod 777 database/database.sqlite
+    # Detect persistent disk if mounted (e.g. /var/data or /data)
+    if [ -d "/var/data" ]; then
+        SQLITE_PATH="/var/data/database.sqlite"
+    elif [ -d "/data" ]; then
+        SQLITE_PATH="/data/database.sqlite"
+    else
+        SQLITE_PATH="/var/www/html/database/database.sqlite"
+    fi
+    export DB_DATABASE="$SQLITE_PATH"
+    touch "$SQLITE_PATH"
+    chmod 777 "$SQLITE_PATH"
 fi
 
 # Check APP_KEY

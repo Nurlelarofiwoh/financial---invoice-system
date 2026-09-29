@@ -41,19 +41,27 @@
 <div class="max-w-4xl mx-auto space-y-6" x-data="invoiceForm()">
     
     <!-- Draft Recovery Banner -->
-    <div x-show="hasDraft" x-cloak class="bg-amber-50 border border-amber-300 text-amber-900 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm animate-pulse">
+    <div x-show="hasDraft" x-cloak class="bg-amber-50 border border-amber-300 text-amber-900 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-md border-l-4 border-l-amber-500">
         <div class="flex items-center space-x-3">
-            <div class="w-8 h-8 rounded-full bg-amber-200 text-amber-800 flex items-center justify-center font-bold text-sm shrink-0">💾</div>
+            <div class="w-10 h-10 rounded-xl bg-amber-200 text-amber-800 flex items-center justify-center font-bold text-lg shrink-0">💾</div>
             <div>
-                <p class="font-bold text-xs sm:text-sm text-amber-900">Ditemukan Draf Invoice Tersimpan</p>
-                <p class="text-[11px] sm:text-xs text-amber-700">Terdapat data item invoice baru yang tersimpan di browser Anda dari sesi sebelumnya.</p>
+                <p class="font-bold text-xs sm:text-sm text-amber-950">
+                    Ditemukan Draf Data Item yang Belum Tersimpan
+                </p>
+                <p class="text-[11px] sm:text-xs text-amber-800 mt-0.5">
+                    Klien: <span class="font-bold" x-text="draftDetails.customer || 'Pelanggan'"></span> 
+                    • Total: <span class="font-bold text-blue-700" x-text="draftDetails.itemCount + ' item'"></span> 
+                    <template x-if="draftDetails.savedAt">
+                        <span>• Tersimpan: <span x-text="draftDetails.savedAt"></span></span>
+                    </template>
+                </p>
             </div>
         </div>
-        <div class="flex items-center space-x-2 shrink-0">
-            <button type="button" @click="restoreDraft()" class="px-3.5 py-1.5 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-xl shadow transition">
-                🔄 Pulihkan Draf
+        <div class="flex items-center space-x-2 shrink-0 w-full sm:w-auto justify-end">
+            <button type="button" @click="restoreDraft()" class="px-4 py-2 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white font-extrabold text-xs rounded-xl shadow-md transition transform hover:scale-105 flex items-center space-x-1.5">
+                <span>🔄 Pulihkan Data Ini</span>
             </button>
-            <button type="button" @click="clearDraft()" class="px-3 py-1.5 bg-white border border-amber-300 hover:bg-amber-100 text-amber-800 font-semibold text-xs rounded-xl transition">
+            <button type="button" @click="clearDraft()" class="px-3 py-2 bg-white border border-amber-300 hover:bg-amber-100 text-amber-800 font-semibold text-xs rounded-xl transition">
                 Abaikan
             </button>
         </div>
@@ -379,28 +387,57 @@
             items: @json($initialItems),
             storageKey: 'motoshop_draft_invoice_create',
             hasDraft: false,
+            draftDetails: { customer: '', itemCount: 0, savedAt: '' },
             isSubmitting: false,
 
             init() {
-                // Check if offline draft exists
-                try {
-                    const saved = localStorage.getItem(this.storageKey);
-                    if (saved) {
-                        const parsed = JSON.parse(saved);
-                        if (parsed && Array.isArray(parsed.items) && parsed.items.length > 0) {
-                            // Check if current initial items is just 1 empty row
-                            const isCurrentEmpty = this.items.length === 1 && !this.items[0].product_id;
-                            if (isCurrentEmpty) {
-                                this.hasDraft = true;
-                            }
-                        }
-                    }
-                } catch(e) {}
+                this.detectAnyDraft();
 
                 // Auto-save draft on item changes
                 this.$watch('items', () => {
                     this.saveDraft();
                 });
+            },
+
+            detectAnyDraft() {
+                try {
+                    let saved = localStorage.getItem(this.storageKey);
+                    let foundDraft = null;
+
+                    if (saved) {
+                        try { foundDraft = JSON.parse(saved); } catch(e) {}
+                    }
+
+                    // If not found in primary key, search all motoshop_draft_* keys (e.g. from edit_6 or others)
+                    if (!foundDraft || !Array.isArray(foundDraft.items) || foundDraft.items.length === 0) {
+                        for (let i = 0; i < localStorage.length; i++) {
+                            const key = localStorage.key(i);
+                            if (key && key.startsWith('motoshop_draft_')) {
+                                try {
+                                    const candidate = JSON.parse(localStorage.getItem(key));
+                                    if (candidate && Array.isArray(candidate.items) && candidate.items.length > 0) {
+                                        foundDraft = candidate;
+                                        this.storageKey = key;
+                                        break;
+                                    }
+                                } catch(e) {}
+                            }
+                        }
+                    }
+
+                    if (foundDraft && Array.isArray(foundDraft.items) && foundDraft.items.length > 0) {
+                        const validItems = foundDraft.items.filter(i => i.product_id != '');
+                        const isCurrentEmpty = this.items.length <= 1 && (!this.items[0] || !this.items[0].product_id);
+                        if (isCurrentEmpty && validItems.length > 0) {
+                            this.hasDraft = true;
+                            this.draftDetails = {
+                                customer: foundDraft.customer_name || 'Pelanggan',
+                                itemCount: validItems.length,
+                                savedAt: foundDraft.saved_at || ''
+                            };
+                        }
+                    }
+                } catch(e) {}
             },
 
             saveDraft() {
@@ -413,15 +450,25 @@
                         payment_status: document.querySelector('[name="payment_status"]')?.value || '',
                         notes: document.querySelector('[name="notes"]')?.value || '',
                         items: this.items,
-                        saved_at: new Date().toLocaleTimeString('id-ID')
+                        saved_at: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
                     };
-                    localStorage.setItem(this.storageKey, JSON.stringify(draft));
+                    localStorage.setItem('motoshop_draft_invoice_create', JSON.stringify(draft));
                 } catch(e) {}
             },
 
             restoreDraft() {
                 try {
-                    const saved = localStorage.getItem(this.storageKey);
+                    let saved = localStorage.getItem(this.storageKey);
+                    if (!saved) {
+                        for (let i = 0; i < localStorage.length; i++) {
+                            const key = localStorage.key(i);
+                            if (key && key.startsWith('motoshop_draft_')) {
+                                saved = localStorage.getItem(key);
+                                break;
+                            }
+                        }
+                    }
+
                     if (saved) {
                         const parsed = JSON.parse(saved);
                         if (parsed.items && Array.isArray(parsed.items) && parsed.items.length > 0) {
@@ -457,6 +504,7 @@
             clearDraft() {
                 try {
                     localStorage.removeItem(this.storageKey);
+                    localStorage.removeItem('motoshop_draft_invoice_create');
                     this.hasDraft = false;
                 } catch(e) {}
             },

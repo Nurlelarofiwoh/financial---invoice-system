@@ -15,11 +15,12 @@ RUN apk add --no-cache \
     zip \
     ca-certificates \
     icu-dev \
-    sqlite-dev
+    sqlite-dev \
+    postgresql-dev
 
 # Install PHP extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo_mysql pdo_sqlite mbstring gd opcache intl zip bcmath
+    && docker-php-ext-install pdo_mysql pdo_pgsql pdo_sqlite mbstring gd opcache intl zip bcmath
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
