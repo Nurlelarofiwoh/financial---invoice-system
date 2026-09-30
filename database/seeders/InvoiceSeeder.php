@@ -122,7 +122,7 @@ class InvoiceSeeder extends Seeder
       'due_date' => '2026-09-08',
       'notes' => NULL,
       'total_amount' => 21100000.0,
-      'payment_status' => 'unpaid',
+      'payment_status' => 'paid',
     ),
     'items' => 
     array (
@@ -392,7 +392,7 @@ class InvoiceSeeder extends Seeder
       'due_date' => '2026-09-08',
       'notes' => NULL,
       'total_amount' => 14700000.0,
-      'payment_status' => 'unpaid',
+      'payment_status' => 'paid',
     ),
     'items' => 
     array (
@@ -464,7 +464,7 @@ class InvoiceSeeder extends Seeder
       'due_date' => '2026-09-21',
       'notes' => NULL,
       'total_amount' => 26185000.0,
-      'payment_status' => 'unpaid',
+      'payment_status' => 'paid',
     ),
     'items' => 
     array (
@@ -2077,17 +2077,14 @@ class InvoiceSeeder extends Seeder
 );
 
         foreach ($invoicesData as $data) {
-            $invoice = Invoice::firstOrCreate(["invoice_number" => $data["invoice"]["invoice_number"]], $data["invoice"]);
+            $invData = $data["invoice"];
+            unset($invData['id']);
+            $invoice = Invoice::updateOrCreate(["invoice_number" => $invData["invoice_number"]], $invData);
+            $invoice->items()->delete();
             foreach ($data["items"] as $item) {
                 $item["invoice_id"] = $invoice->id;
                 unset($item['id']);
-                InvoiceItem::firstOrCreate([
-                    "invoice_id" => $invoice->id,
-                    "product_id" => $item["product_id"],
-                    "order_date" => $item["order_date"],
-                    "unit_price" => $item["unit_price"],
-                    "quantity"   => $item["quantity"],
-                ], $item);
+                InvoiceItem::create($item);
             }
         }
     }

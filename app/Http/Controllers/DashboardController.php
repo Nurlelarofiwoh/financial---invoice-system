@@ -33,9 +33,20 @@ class DashboardController extends Controller
         $overdueInvoicesCount = Invoice::where('payment_status', 'overdue')->count();
         $overdueInvoicesAmount = Invoice::where('payment_status', 'overdue')->sum('total_amount');
 
-        $isSqlite = DB::connection()->getDriverName() === 'sqlite';
-        $monthKeySql = $isSqlite ? "strftime('%Y-%m', issue_date)" : "DATE_FORMAT(issue_date, '%Y-%m')";
-        $monthLabelSql = $isSqlite ? "strftime('%Y-%m', issue_date)" : "DATE_FORMAT(issue_date, '%M %Y')";
+        $driver = DB::connection()->getDriverName();
+        $isSqlite = $driver === 'sqlite';
+        $isPgsql = $driver === 'pgsql';
+
+        if ($isSqlite) {
+            $monthKeySql = "strftime('%Y-%m', issue_date)";
+            $monthLabelSql = "strftime('%Y-%m', issue_date)";
+        } elseif ($isPgsql) {
+            $monthKeySql = "to_char(issue_date, 'YYYY-MM')";
+            $monthLabelSql = "to_char(issue_date, 'FMMonth YYYY')";
+        } else {
+            $monthKeySql = "DATE_FORMAT(issue_date, '%Y-%m')";
+            $monthLabelSql = "DATE_FORMAT(issue_date, '%M %Y')";
+        }
 
         // 2. Monthly Financial Breakdown Table (grouped by Month & Year)
         $monthlyBreakdown = DB::table('invoices')
@@ -47,7 +58,7 @@ class DashboardController extends Controller
                 DB::raw("SUM(CASE WHEN payment_status != 'paid' THEN total_amount ELSE 0 END) as pending_amount"),
                 DB::raw("SUM(total_amount) as aggregate_income")
             )
-            ->groupBy('month_key', 'month_label')
+            ->groupBy(DB::raw($monthKeySql), DB::raw($monthLabelSql))
             ->orderBy('month_key', 'desc')
             ->get();
 
