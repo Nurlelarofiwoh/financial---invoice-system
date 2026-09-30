@@ -11,17 +11,36 @@ chmod -R 777 storage bootstrap/cache database
 chown -R www-data:www-data storage bootstrap/cache database
 
 # Check Database Configuration
-# If DB_CONNECTION is not set or set to mysql but DB_HOST is empty, 127.0.0.1, or localhost,
-# Render cannot connect to a local MySQL because no MySQL is running in the container.
-# In this case, fallback to SQLite so the site boots up and functions properly.
 USE_SQLITE=0
-if [ -z "$DB_CONNECTION" ] || [ "$DB_CONNECTION" = "sqlite" ]; then
+
+if [ -n "$DATABASE_URL" ] || [ -n "$DB_URL" ]; then
+    URL="${DATABASE_URL:-$DB_URL}"
+    echo "🔗 External database URL detected!"
+    case "$URL" in
+        postgres://*|postgresql://*)
+            echo "🐘 Using PostgreSQL via DATABASE_URL..."
+            export DB_CONNECTION=pgsql
+            export DB_URL="$URL"
+            USE_SQLITE=0
+            ;;
+        mysql://*)
+            echo "🐬 Using MySQL via DATABASE_URL..."
+            export DB_CONNECTION=mysql
+            export DB_URL="$URL"
+            USE_SQLITE=0
+            ;;
+        *)
+            echo "ℹ️ Using provided database URL..."
+            USE_SQLITE=0
+            ;;
+    esac
+elif [ -z "$DB_CONNECTION" ] || [ "$DB_CONNECTION" = "sqlite" ]; then
     USE_SQLITE=1
 elif [ "$DB_CONNECTION" = "mysql" ]; then
     if [ -z "$DB_HOST" ] || [ "$DB_HOST" = "127.0.0.1" ] || [ "$DB_HOST" = "localhost" ]; then
         echo "⚠️ WARNING: DB_HOST is '$DB_HOST' (localhost)."
         echo "⚠️ There is no MySQL server running inside this container."
-        echo "🔄 Automatically switching to SQLite so the application works immediately!"
+        echo "🔄 Automatically switching to SQLite fallback!"
         USE_SQLITE=1
     fi
 elif [ "$DB_CONNECTION" = "pgsql" ] || [ "$DB_CONNECTION" = "postgresql" ]; then

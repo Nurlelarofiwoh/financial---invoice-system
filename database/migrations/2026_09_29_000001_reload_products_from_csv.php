@@ -1580,6 +1580,96 @@ return new class extends Migration
     'stock_quantity' => 0,
     'status' => 'active',
   ),
+  157 => 
+  array (
+    'id' => 158,
+    'product_code' => 'PRD-PART-158',
+    'name' => 'batok beat fi st halus',
+    'category' => 'Part Body & Aksesoris',
+    'unit_price' => 30000.0,
+    'stock_quantity' => 0,
+    'status' => 'active',
+  ),
+  158 => 
+  array (
+    'id' => 159,
+    'product_code' => 'PRD-PART-159',
+    'name' => 'batok beat fi st kasar',
+    'category' => 'Part Body & Aksesoris',
+    'unit_price' => 30000.0,
+    'stock_quantity' => 0,
+    'status' => 'active',
+  ),
+  159 => 
+  array (
+    'id' => 160,
+    'product_code' => 'PRD-PART-160',
+    'name' => 'body beat eco',
+    'category' => 'Part Body & Aksesoris',
+    'unit_price' => 60000.0,
+    'stock_quantity' => 0,
+    'status' => 'active',
+  ),
+  160 => 
+  array (
+    'id' => 161,
+    'product_code' => 'PRD-HALUS-161',
+    'name' => 'full halus beat fi st kasar',
+    'category' => 'Body Full Halus',
+    'unit_price' => 140000.0,
+    'stock_quantity' => 0,
+    'status' => 'active',
+  ),
+  161 => 
+  array (
+    'id' => 162,
+    'product_code' => 'PRD-HALUS-162',
+    'name' => 'full halus beat fi st halus',
+    'category' => 'Body Full Halus',
+    'unit_price' => 140000.0,
+    'stock_quantity' => 0,
+    'status' => 'active',
+  ),
+  162 => 
+  array (
+    'id' => 163,
+    'product_code' => 'PRD-HALUS-163',
+    'name' => 'full halus beat deluxe non batok',
+    'category' => 'Body Full Halus',
+    'unit_price' => 275000.0,
+    'stock_quantity' => 0,
+    'status' => 'active',
+  ),
+  163 => 
+  array (
+    'id' => 164,
+    'product_code' => 'PRD-PART-164',
+    'name' => 'Tameng beat karbu Smoke',
+    'category' => 'Part Body & Aksesoris',
+    'unit_price' => 65000.0,
+    'stock_quantity' => 0,
+    'status' => 'active',
+  ),
+  164 => 
+  array (
+    'id' => 165,
+    'product_code' => 'PRD-HALUS-165',
+    'name' => 'full halus beat street non batok non spakbor',
+    'category' => 'Body Full Halus',
+    'unit_price' => 170000.0,
+    'stock_quantity' => 0,
+    'status' => 'active',
+  ),
+  165 => 
+  array (
+    'id' => 166,
+    'product_code' => 'PRD-HALUS-166',
+    'name' => 'full halus mio soul gt',
+    'category' => 'Body Full Halus',
+    'unit_price' => 375000.0,
+    'stock_quantity' => 0,
+    'status' => 'active',
+  ),
 );
 
         foreach ($products as $p) {
